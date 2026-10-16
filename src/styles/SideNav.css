@@ -1,0 +1,46 @@
+
+.nav-sidebar {
+  width: 240px;
+  box-sizing: border-box;
+  flex-shrink: 0;
+  color: #AAB2C0;
+  padding: 28px 16px;
+  min-height: 100vh;
+  border-right: 1px solid #191f38;
+  background-color: #090c1a;
+  overflow: hidden;
+}
+
+.nav-sidebar .workspace{
+  padding: 0px;
+}
+
+.nav-sidebar .workspace .workspace-title {
+  font-size: 10px;
+}
+
+.nav-sidebar .workspace .worspace-nav-option{
+  border-radius: 5px;
+  background-color: #1A1F2A;
+  margin: 5px 0px 5px 0;
+  padding: 7px;
+  font-size: 13px;
+}
+.nav-sidebar .workspace .worspace-nav-option:hover {
+  color: #C7D2FE;
+  background-color: #1B2140;
+  transition-duration: 0.5s;
+}
+
+.collections{
+  padding: 0px;
+  margin-top: 30px;
+}
+
+.collections .collections-title{
+  font-size: 10px;
+}
+
+.collections .collections-option{
+    font-size: 13px;
+}

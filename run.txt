@@ -1,0 +1,7 @@
+Template created! To get started run:
+  cd Task-Orginiser
+  npm install
+
+
+For Desktop development, run:
+  npm run tauri dev

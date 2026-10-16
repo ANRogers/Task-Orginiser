@@ -1,0 +1,12 @@
+ability to make tasks of diffrent types:
+daily
+weekly
+monthly
+
+each day the daily tasks should be displayed on the dask and the weekly tasks
+possibily upcomeing tasks for the next day?
+a calander to assign tasks for set days or to view tasks for those days
+maisie wasnt moon phase on calinder
+there should also be an overdue tasks area
+
+a bourd to hold progress of tasks done and maybe a way to show if they were done in time
