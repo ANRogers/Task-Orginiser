@@ -6,11 +6,34 @@ import "../styles/HomePage.css"
 import "../styles/WorkSpaceBar.css"
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faEllipsisVertical, faRepeat, 
+import { 
   faPlus, faCircleExclamation, faArrowRight, 
   faSquareArrowUpRight, faTableList, faSun, faMoon,
   faCalendarWeek, faList, faCircleCheck, faClock
  } from '@fortawesome/free-solid-svg-icons';
+
+import {
+  getDailyTasks,
+  getWeeklyTasks,
+  getOverdueTasks,
+  getUpcommingTasks,
+  getMonthlyTask,
+  addTask,
+
+  type Task
+} from '../services/TaskService';
+
+import {
+  getWorkspaces,
+
+  type Workspace
+} from '../services/WorkspaceService'
+
+import DailyTasks from "../Components/DailyTasks";
+import WeeklyTasks from "../Components/WeeklyTasks";
+import OverdueTasks from "../Components/OverdueTasks";
+import UpcommingTasks from "../Components/UpcommingTasks";
+import MonthlyTask from "../Components/MonthlyTask";
 
   
 export default function HomePage() {
@@ -26,6 +49,10 @@ export default function HomePage() {
     return () => clearInterval(timer);
   }, []);
 
+  const today = currentTime.getFullYear() + "-" +
+    String(currentTime.getMonth() + 1).padStart(2, "0") + "-" +
+    String(currentTime.getDate()).padStart(2, "0");
+
   // Bristol coordinates
   const latitude = 51.4545;
   const longitude = -2.5879;
@@ -34,21 +61,164 @@ export default function HomePage() {
 
   const is_sun_up = currentTime >= sun_times.sunrise && currentTime < sun_times.sunset;
 
+  const [workspaces, setWorkspaces] = useState<Workspace[]>([]);
+
+  useEffect(() => {
+    async function loadWorkspaces() {
+      try{
+        const collections = await getWorkspaces();
+        setWorkspaces(collections);
+      } catch(error){
+        console.error('failed to load workspaces:', error);
+      }
+    }
+
+    loadWorkspaces();
+  }, []);
+
+  //loads daily and weekly tasks;
+  const [dailyTasks, setDailyTasks] = useState<Task[]>([]);
+  const [weeklyTasks, setWeeklyTasks] = useState<Task[]>([]);
+  const [monthlyTask, setMonthlyTask] = useState<Task[]>([]);
+  const [overdueTasks, setOverdueTasks] = useState<Task[]>([]);
+  const [upcommingTasks, setUpcommingTasks] = useState<Task[]>([]);
+
+    useEffect(() => {
+        async function loadDailyTasks() {
+            try{
+                const daily_tasks = await getDailyTasks();
+                setDailyTasks(daily_tasks);
+            } catch(error) {
+                console.error('failed to load daily tasks:', error);
+            }
+        }
+
+        async function loadWeeklyTasks() {
+            try{
+                const weekly_tasks = await getWeeklyTasks();
+                setWeeklyTasks(weekly_tasks);
+            } catch(error) {
+                console.error('failed to load weekly tasks:', error);
+            }
+        }
+
+        async function loadMonthlyTask() {
+            try{
+                const monthly_task = await getMonthlyTask();
+                setMonthlyTask(monthly_task);
+            } catch(error) {
+                console.error('failed to load weekly tasks:', error);
+            }
+        }
+
+        async function loadOverdueTasks() {
+            try{
+                const overdue_tasks = await getOverdueTasks();
+                setOverdueTasks(overdue_tasks);
+            } catch(error) {
+                console.error('failed to load overdue tasks:', error);
+            }
+        }
+
+        async function loadUpcommingTasks() {
+            try{
+                const upcomming_tasks = await getUpcommingTasks();
+                setUpcommingTasks(upcomming_tasks);
+            } catch(error) {
+                console.error('failed to load overdue tasks:', error);
+            }
+        }
+
+        loadDailyTasks();
+
+        loadWeeklyTasks();
+
+        loadMonthlyTask();
+
+        loadOverdueTasks();
+
+        loadUpcommingTasks();
+    });
+
+
+  //filters the tasks based on the buttons
+  const [taskFilter, setTaskFilter] = useState("all");
+  const filteredDailyTasks = dailyTasks.filter(task =>{
+    if (taskFilter === "todo"){
+      return task.status !== "completed";
+    }
+
+    if (taskFilter === "compleated"){
+      return task.status === "completed";
+    }
+
+    return true;
+  });
+
+  const filteredWeeklyTasks = weeklyTasks.filter(task =>{
+    if (taskFilter === "todo"){
+      return task.status !== "completed";
+    }
+
+    if (taskFilter === "compleated"){
+      return task.status === "completed";
+    }
+
+    return true;
+  });
+
+  //tasks
+  const [title, setTitle] = useState("");
+  const [discription, setDiscription] = useState("");
+  const [taskType, setTaskType] = useState("daily");
+  const [dueDate, setDueDate] = useState(today);
+  const [workspaceId, setWorkspaceId] = useState<number | null>(null);
+
+  useEffect(() => {
+      if (workspaces.length > 0 && workspaceId === null) {
+          setWorkspaceId(workspaces[0].id);
+      }
+  }, [workspaces, workspaceId]);
+
+  async function AddTask(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+
+    if (workspaceId === null) {
+        console.error("Please select a workspace.");
+        return;
+    }
+
+    try {
+        await addTask(title, discription, workspaceId, taskType, dueDate);
+
+        // Reset form fields
+        setTitle("");
+        setDiscription("");
+        setTaskType("daily");
+        setDueDate(today);
+
+        console.log("New Task Added!");
+    } catch (error) {
+        console.error("Failed to add task:", error);
+    }
+}
+
   // todays tasks
-  let total_daily_tasks_num = 1;
-  let total_weekly_tasks_num = 1;
-  let total_monthly_tasks_num = 0;
-  let total_num_tasks = total_daily_tasks_num + total_weekly_tasks_num + total_monthly_tasks_num;
+  const total_daily_tasks_num = dailyTasks.length;
+  const total_weekly_tasks_num = weeklyTasks.length;
+  const total_monthly_tasks_num = 0;
+  const total_num_tasks = total_daily_tasks_num + total_weekly_tasks_num + total_monthly_tasks_num;
 
   //overdue tasks
-  let total_overdue_tasks_num = 1;
+  let total_overdue_tasks_num = overdueTasks.length;
 
   //up next tasks
-  let total_upcomeing_tasks_num = 1;
+  let total_upcomeing_tasks_num = upcommingTasks.length;
+
 
   // compleated today overview
-  const completedTasks = 2;
-  const totalTasks = 5;
+  let completedTasks = dailyTasks.filter(task => task.status == "completed").length + weeklyTasks.filter(task => task.status == "completed").length;
+  const totalTasks = total_num_tasks;
 
   const progress = totalTasks > 0
       ? (completedTasks / totalTasks) * 100
@@ -66,9 +236,9 @@ export default function HomePage() {
                 <span>Dashboard</span>
             </div>
             <div className="workspace-actions">
-                <div className="topbar-newtask">
+              <button data-bs-toggle="dialog" data-bs-target="#AddTaskOverlay" data-bs-backdrop="static" className="topbar-newtask">
                 <FontAwesomeIcon icon={faPlus} /> New Task
-            </div>
+              </button>
             </div>
             
         </div>
@@ -158,15 +328,19 @@ export default function HomePage() {
                       <a className="view-all-tasks">View All Tasks <FontAwesomeIcon icon={faSquareArrowUpRight} /></a>
                     </div>
                     <div className="todays-tasks-options">
-                      <div className="tasks-option-box">
+
+                      <button className="tasks-option-box" onClick={() => setTaskFilter("all")}>
                         All Tasks
-                      </div>
-                      <div className="tasks-option-box">
+                      </button>
+
+                      <button className="tasks-option-box" onClick={() => setTaskFilter("todo")}>
                         To Do
-                      </div>
-                      <div className="tasks-option-box">
+                      </button>
+
+                      <button className="tasks-option-box" onClick={() => setTaskFilter("compleated")}>
                         Compleated
-                      </div>
+                      </button>
+
                     </div>
                   </div>
                   <div className="todays-tasks-scroll-box">
@@ -178,33 +352,8 @@ export default function HomePage() {
                     <p>Here is todays tasks!</p>
                   </div>
                   
-                  <div className="daily-tasks-slot">
-
-                    <div className="daily-task-box">
-                      <div className="daily-task-box-left">
-                        <input className="daily-task-checkbox" type="checkbox"></input>
-                        <div className="task-text-slot">
-                          <h1>Review Today's Priorities</h1>
-                          <p className="collections-text">Work</p>
-                        </div>
-                      </div>
-                      <div className="daily-task-box-right">
-                          <button className="repeat-daily-btn">
-                              <FontAwesomeIcon icon={faRepeat} />
-                              Daily
-                          </button>
-
-                          <button className="task-options-btn" aria-label="Task options">
-                              <FontAwesomeIcon icon={faEllipsisVertical} />
-                          </button>
-                      </div>
-                    </div>
-
-                   
-
-                    
-
-                  </div>
+                  <DailyTasks tasks={filteredDailyTasks} />
+                  
                   <div className="task-type-title">
                     <FontAwesomeIcon icon={faCalendarWeek} />                        
                     <h1>Weekly Tasks</h1>
@@ -212,45 +361,16 @@ export default function HomePage() {
                     <p>Here is your weekly tasks!</p>
                   </div>
 
-                  <div className="daily-tasks-slot">
-                    <div className="daily-task-box">
-                      <div className="daily-task-box-left">
-                        <input className="daily-task-checkbox" type="checkbox"></input>
-                        <div className="task-text-slot">
-                          <h1>Send weekly project update</h1>
-                          <p className="collections-text">Work</p>
-                        </div>
-                      </div>
-                      <div className="daily-task-box-right">
-                          <button className="repeat-daily-btn">
-                              <FontAwesomeIcon icon={faRepeat} />
-                              Weekly
-                          </button>
-
-                          <button className="task-options-btn" aria-label="Task options">
-                              <FontAwesomeIcon icon={faEllipsisVertical} />
-                          </button>
-                      </div>
-                
-                    </div>
-                  </div>
+                  <WeeklyTasks tasks={filteredWeeklyTasks} />
+                  
                   <div className="add-task-box">
-                    <button><FontAwesomeIcon className="add-task-icon" icon={faPlus} /> Add a task for today</button>
+                    <button data-bs-toggle="dialog" data-bs-target="#AddTaskOverlay" data-bs-backdrop="static"><FontAwesomeIcon className="add-task-icon" icon={faPlus} /> Add a task for today</button>
                   </div>
                   </div>
                 </div>
 
-                <div className="monthly-task">
-                  <div className="monthly-task-date">
-                    <p className="monthly-task-date-text">OCT</p>
-                    <p className="monthly-task-date-text">10</p>
-                  </div>
-                  <div className="next-monthly-task-text">
-                    <p>Next Monthly Task</p>
-                    <h1>Review monthly budget</h1>
-                  </div>
-
-                </div>
+                <MonthlyTask task={monthlyTask}/>
+                
               </div>
               <div className="overdue-tasks-slot">
                 <div className="overdue-tasks">
@@ -259,64 +379,128 @@ export default function HomePage() {
                     <p className="overdue-number" id="overdue-number"> {total_overdue_tasks_num}</p>
                   </div>
                   <p className="overdue-under-title-text">A new day to get these back on track.</p>
+                  <OverdueTasks tasks={overdueTasks}/>
                   
-                  <div className="side-bar-tasks-slot">
-                  <div className="side-bar-tasks-scroll">
-
-                    <div className="side-bar-task-box">
-                        <input className="overdue-task-checkbox" type="checkbox"></input>
-                        <div className="task-text-slot">
-                          <h1>Send weekly project update</h1>
-                          <div className="side-bar-task-info">
-                            <p className="collections-text">Work</p>
-                            <p className="collections-text"> · </p>
-                            <p className="collections-text">Due Oct 7</p>
-                            <p className="collections-text"> · </p>
-                            <p className="collections-text">2 days overdue</p>
-                          </div>
-                        </div>
-                      </div>
-                      
-                    </div>
-                  </div>
-
                 </div>
+              
                 <div className="upcomeing-tasks">
                   <div className="todays-tasks-title">
                     <h1>Up Next</h1>
                     <p className="task-number" id="upcomming-number"> {total_upcomeing_tasks_num}</p>
                   </div>
-                  <p className="overdue-under-title-text">A new day to get these back on track.</p>
+                  {upcommingTasks.length > 0 ? (
+                    <div>
+                    <p className="overdue-under-title-text">A new day to get these back on track.</p>
                   
-                  <div className="side-bar-tasks-slot">
-                    <div className="side-bar-tasks-scroll">
-                    <div className="side-bar-task-box up-next-box">
-                        <input className="daily-task-checkbox" type="checkbox"></input>
-                        <div className="task-text-slot">
-                          <h1>Send weekly project update</h1>
-                          <div className="side-bar-task-info">
-                            <p className="collections-text">Work</p>
-                            <p className="collections-text"> · </p>
-                            <p className="collections-text">Daily</p>
-                          </div>
-                        </div>
-                      </div>
-
-                      </div>
-
-                      <div className="see-calander-box">
-                        
-                        <button className="see-calander-button">See your calendar <FontAwesomeIcon icon={faArrowRight} /></button>
-                  
-                      </div>
-                      
+                    <UpcommingTasks tasks={upcommingTasks}/>
                   </div>
+                ) : (
+                <div>
+                  <p className="overdue-under-title-text">No Upcomming tasks tomrrow!</p>
+                  <div className="see-calander-box">
+                
+                  <button className="see-calander-button">See your calendar <FontAwesomeIcon icon={faArrowRight} /></button>
+            
+                  </div>
+                </div>
+              )}
+                  
+                
+                  
                  
                 </div>
               </div>
             </div>
 
         </div>
+
+        {/* add task overlay */}
+        <dialog className="dialog add-task-dialog" id="AddTaskOverlay">
+          <div className="dialog-header">
+            <h1 className="dialog-title">Create a task</h1>
+            
+          </div>
+          <form onSubmit={AddTask}>
+          <div className="dialog-body">
+            
+            <div className="add-task-input-box">
+              <h5>Task Name</h5>
+              <input className="add-task-text-input" type="text" id="taskName" value={title} placeholder="Enter Task Name" required onChange={e => setTitle(e.target.value)}></input>
+            </div>
+
+            <div className="add-task-input-box">
+              <h5>Notes</h5>
+              <input type="text" className="add-task-text-input" id="taskNote" placeholder="Enter Notes" value={discription} onChange={e => setDiscription(e.target.value)}></input>
+            </div>
+
+            <div className="add-task-input-box">
+              <h5>Task Type</h5>
+              <div className="add-task-type-radio-slot">
+
+                <label className="add-task-type-radio-box">
+                    <div className="add-task-radio-top">
+                        <h5>Daily</h5>
+                        <input type="radio" checked={taskType === "daily"} name="taskType" value="daily" onChange={e => setTaskType(e.target.value)} />
+                    </div>
+
+                    <p>An everyday task</p>
+                </label>
+
+                <label className="add-task-type-radio-box">
+                    <div className="add-task-radio-top">
+                        <h5>Weekly</h5>
+                        <input type="radio" checked={taskType === "weekly"} name="taskType" value="weekly" onChange={e => setTaskType(e.target.value)}/>
+                    </div>
+
+                    <p>For the same day each week</p>
+                </label>
+
+                <label className="add-task-type-radio-box">
+                    <div className="add-task-radio-top">
+                        <h5>Monthly</h5>
+                        <input type="radio" checked={taskType === "monthly"} name="taskType" value="monthly" onChange={e => setTaskType(e.target.value)}/>
+                    </div>
+
+                    <p>For the same day each month</p>
+                </label>
+
+              </div>
+
+              <div className="add-task-date-collection-slot">
+                <div className="add-task-input-box">
+                  <h5>Squedualed Date</h5>
+                  <input className="add-task-text-input" required id="taskDate" type="date" value={dueDate} onChange={e => setDueDate(e.target.value)}></input>
+                </div>
+              
+
+                <div className="add-task-input-box">
+                    <h5>Workspace</h5>
+
+                    <select
+                        className="add-task-collection"
+                        id="Workspace"
+                        value={workspaceId ?? ""}
+                        onChange={e => setWorkspaceId(Number(e.target.value))}
+                        required
+                    >
+                        {workspaces.map(workspace => (
+                            <option key={workspace.id} value={workspace.id}>
+                                {workspace.name}
+                            </option>
+                        ))}
+                    </select>
+                </div>
+              </div>
+            </div>
+            
+            
+          </div>
+          <div className="dialog-footer">
+            <button type="button" className="btn-solid theme-secondary add-task-cancel-btn" data-bs-dismiss="dialog">Cancel</button>
+            <button type="submit" className="btn-solid theme-secondary add-task-submit-btn" data-bs-dismiss="dialog"><FontAwesomeIcon icon={faPlus} />Create Task</button>
+          </div>
+          </form>
+        </dialog>
       </div>
     </div>
   );

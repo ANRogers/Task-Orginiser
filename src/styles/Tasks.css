@@ -1,0 +1,406 @@
+.daily-task-box {
+    display: flex;
+    align-items: center;
+    padding: 22px 14px;
+    border-bottom: 1px solid #2A313B;
+}
+
+.daily-task-box-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.daily-task-checkbox{
+  appearance: none;
+  -webkit-appearance: none;
+
+  width: 25px;
+  height: 25px;
+  margin: 0;
+  flex-shrink: 0;
+  cursor: pointer;
+
+  background-color: transparent;
+  border: 2px solid #2A313B;
+  border-radius: 5px;
+
+  display: inline-grid;
+  place-content: center;
+
+  transition: background-color 0.2s, border-color 0.2s;
+
+}
+
+.daily-task-checkbox:checked {
+    background-color: #8B91FF;
+    border-color: #8B91FF;
+}
+
+/* Checkmark */
+.daily-task-checkbox:checked::after {
+    content: "";
+    width: 7px;
+    height: 12px;
+    border: solid white;
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+    margin-top: -2px;
+}
+
+/* When hovering */
+.daily-task-checkbox:hover {
+    border-color: #8B91FF;
+}
+
+/* When clicked or focused */
+.daily-task-checkbox:active {
+    transform: scale(0.95);
+}
+
+.daily-task-checkbox:focus-visible {
+    outline: 2px solid #8B91FF;
+    outline-offset: 3px;
+}
+
+.task-text-slot {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    font-size: 16px;
+}
+
+.task-text-compleated h1 {
+    text-decoration: line-through;
+    color: #7F8797;
+}
+
+.daily-task-box h1 {
+    font-size: 16px;
+    margin: 0;
+}
+
+.daily-task-box-right {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-left: auto;
+}
+
+.repeat-daily-btn {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    padding: 8px 10px;
+    background: transparent;
+    border: 1px solid #2A313B;
+    border-radius: 6px;
+    color: #7F8797;
+    font-size: 13px;
+    cursor: pointer;
+    transition: background-color 0.2s, color 0.2s;
+}
+
+.repeat-daily-btn:hover {
+    background-color: #1B2140;
+    color: #F5F7FA;
+}
+
+.repeat-daily-btn.repeat-btn-active{
+    background-color: #8B91FF;
+    color: #F5F7FA;
+    border: 1px solid #8B91FF;
+}
+
+.repeat-daily-btn.repeat-btn-active:hover {
+    background-color: #8B91FF;
+    color: #F5F7FA;
+    border: 1px solid #8B91FF;
+}
+
+.task-options-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 8px;
+    background: transparent;
+    border: none;
+    border-radius: 6px;
+    color: #7F8797;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.task-options-btn:hover {
+    background-color: #1B2140;
+    color: #F5F7FA;
+}
+
+.add-task-box{
+  padding: 14px 11px;
+  
+}
+.add-task-box button{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  border-radius: 6px;
+  color: #8B91FF;
+  font-size: 16px;
+  cursor: pointer;
+  gap: 8px;
+}
+
+
+.monthly-task {
+    background-color: #1A1F2A;
+    padding: 20px;
+    border: 1px solid #2A313B;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.monthly-task-date{
+  padding: 6px 10px;
+  text-align: center;
+  background: #2A313B;
+  border-radius: 8px;
+  color: #F2B86A;
+  font-weight: 700;
+}
+
+.monthly-task-date-text{
+    color: #F2B86A !important; 
+}
+
+.next-monthly-task-text{
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.monthly-task p {
+    font-size: 14px;
+    color: #AAB2C0;
+    margin: 0;
+}
+
+.monthly-task h1 {
+    font-size: 16px;
+    margin: 0;
+}
+
+.overdue-tasks-slot {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    gap: 24px;
+    min-width: 0;
+    min-height: 0;
+}
+
+/* Both panels share the available height equally */
+.overdue-tasks,
+.upcomeing-tasks {
+    display: flex;
+    flex-direction: column;
+
+    flex: 0 1 auto;
+    min-width: 0;
+    min-height: 0;
+    max-height: 50%;
+
+    overflow: hidden;
+}
+
+.overdue-tasks > .todays-tasks-title,
+.upcomeing-tasks > .todays-tasks-title,
+.overdue-under-title-text {
+    flex-shrink: 0;
+}
+
+.side-bar-tasks-slot {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-height: 0;
+    overflow: hidden;
+}
+
+.side-bar-tasks-scroll {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+/* Optional scrollbar styling */
+.side-bar-tasks-scroll::-webkit-scrollbar {
+    width: 5px;
+}
+
+.side-bar-tasks-scroll::-webkit-scrollbar-thumb {
+    background: #3A4150;
+    border-radius: 6px;
+}
+
+.side-bar-tasks-scroll::-webkit-scrollbar-thumb:hover {
+    background: #8B5CF6;
+}
+
+/* Keep the calendar button visible */
+.see-calander-box {
+    flex-shrink: 0;
+    margin-top: 10px;
+}
+
+.overdue-tasks {
+    background-color: #2A1F1C;
+    padding: 20px;
+    border: 1px solid #4A2E24;
+    border-radius: 12px;
+    color: #FF8A7D;
+}
+
+.todays-tasks-title h1,
+.todays-tasks-title .overdue-number{
+    margin: 0;
+}
+
+.overdue-number{
+    font-size: 11px;
+    border-radius: 5px;
+    background-color: #4A2E24;
+    padding: 3px 7px;
+}
+
+.overdue-under-title-text{
+    font-size: 11px;
+    margin: 9px 0px;
+    padding: 0;
+    
+}
+
+.side-bar-task-box{
+    display: flex;
+    padding: 14px 0;
+    gap: 12px;
+    align-items: center;
+    
+    border-bottom: 1px solid #3A2B24;
+}
+
+.overdue-task-checkbox{
+    appearance: none;
+    -webkit-appearance: none;
+
+    width: 25px;
+    height: 25px;
+    margin: 0;
+    flex-shrink: 0;
+    cursor: pointer;
+
+    background-color: transparent;
+    border: 2px solid #FF8A7D;
+    border-radius: 5px;
+
+    display: inline-grid;
+    place-content: center;
+
+    transition: background-color 0.2s, border-color 0.2s;
+}
+
+.overdue-task-checkbox:checked {
+    background-color: #FF8A7D;
+    border-color: #FF8A7D;
+}
+
+/* Checkmark */
+.overdue-task-checkbox:checked::after {
+    content: "";
+    width: 7px;
+    height: 12px;
+    border: solid white;
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+    margin-top: -2px;
+}
+
+/* When hovering */
+.overdue-task-checkbox:hover {
+    border-color: #FF8A7D;
+}
+
+/* When clicked or focused */
+.overdue-task-checkbox:active {
+    transform: scale(0.95);
+}
+
+.overdue-task-checkbox:focus-visible {
+    outline: 2px solid #FF8A7D;
+    outline-offset: 3px;
+}
+
+.side-bar-task-box .task-text-slot h1{
+    font-size: 13px;
+    color: white;
+}
+
+.side-bar-task-info{
+    display: flex;
+    margin: 0;
+    align-items: center;
+    gap: 3px;
+}
+
+.side-bar-task-box .task-text-slot p{
+    font-size: 10px;
+    text-align: center;
+}
+
+.overdue-confirmation{
+    background-color: #1A1F2A;
+    border: 1px solid #2A313B;
+}
+
+.overdue-confirmation-btn{
+    background-color: #5B5BD6;
+    border: none;
+}
+
+.overdue-confirmation-btn:hover{
+    background-color: #5252be;
+    border: none;
+}
+
+.upcomeing-tasks {
+    background-color: #1A1F2A;
+    padding: 20px;
+    border: 1px solid #2A313B;
+    border-radius: 12px;
+}
+
+.up-next-box{
+    border-bottom: 1px solid #2A313B!important;
+}
+
+.see-calander-box{
+    margin-top: 10px;
+}
+
+.see-calander-button {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    background: transparent;
+    border: none;
+    border-radius: 6px;
+    color: #8B91FF;
+    font-size: 16px;
+    cursor: pointer;
+}
