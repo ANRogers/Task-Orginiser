@@ -37,10 +37,65 @@
   margin-top: 30px;
 }
 
+.collections-title-box{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
 .collections .collections-title{
   font-size: 10px;
 }
 
+.add-collection-btn{
+  border-radius: 8px;
+  border: 1px solid #090c1a;
+  background: none;
+  color: #AAB2C0;
+}
+
+.add-collection-btn:hover{
+  background-color: #1B2140;
+  border: 1px solid #2A313B;
+}
+
 .collections .collections-option{
     font-size: 13px;
+}
+
+.collection-option-box {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 12px;
+    margin-top: 18px;
+}
+
+.collection-option-colour {
+    border-radius: 2px;
+    width: 7px;
+    height: 7px;
+    background-color: #052ae7;
+    flex-shrink: 0;
+}
+
+.collection-option-title {
+    font-size: 13px;
+    margin: 0;
+}
+
+.add-collection-colour-input{
+  background-color: #14181F;
+  border: 1px solid #2A313B;
+  border-radius: 8px;
+
+  color: #ffffff;
+  font: inherit;
+  padding: 6px 8px;
+  box-sizing: border-box;
+
+  outline: none;
+  box-shadow: none;
+  width: 20%;
+
 }

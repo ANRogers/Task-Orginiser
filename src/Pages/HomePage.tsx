@@ -19,6 +19,7 @@ import {
   getUpcommingTasks,
   getMonthlyTask,
   addTask,
+  editTask,
 
   type Task
 } from '../services/TaskService';
@@ -83,62 +84,82 @@ export default function HomePage() {
   const [overdueTasks, setOverdueTasks] = useState<Task[]>([]);
   const [upcommingTasks, setUpcommingTasks] = useState<Task[]>([]);
 
+
+
+    async function loadDailyTasks() {
+        try{
+            const daily_tasks = await getDailyTasks();
+            setDailyTasks(daily_tasks);
+        } catch(error) {
+            console.error('failed to load daily tasks:', error);
+        }
+    }
+
+    async function loadWeeklyTasks() {
+        try{
+            const weekly_tasks = await getWeeklyTasks();
+            setWeeklyTasks(weekly_tasks);
+        } catch(error) {
+            console.error('failed to load weekly tasks:', error);
+        }
+    }
+
+    async function loadMonthlyTask() {
+        try{
+            const monthly_task = await getMonthlyTask();
+            setMonthlyTask(monthly_task);
+        } catch(error) {
+            console.error('failed to load weekly tasks:', error);
+        }
+    }
+
+    async function loadOverdueTasks() {
+        try{
+            const overdue_tasks = await getOverdueTasks();
+            setOverdueTasks(overdue_tasks);
+        } catch(error) {
+            console.error('failed to load overdue tasks:', error);
+        }
+    }
+
+    async function loadUpcommingTasks() {
+        try{
+            const upcomming_tasks = await getUpcommingTasks();
+            setUpcommingTasks(upcomming_tasks);
+        } catch(error) {
+            console.error('failed to load overdue tasks:', error);
+        }
+    }
+
+    //for editing tasks
+    const [editingTask, setEditingTask] = useState<Task | null>(null);
+
     useEffect(() => {
-        async function loadDailyTasks() {
-            try{
-                const daily_tasks = await getDailyTasks();
-                setDailyTasks(daily_tasks);
-            } catch(error) {
-                console.error('failed to load daily tasks:', error);
-            }
-        }
+      loadDailyTasks();
 
-        async function loadWeeklyTasks() {
-            try{
-                const weekly_tasks = await getWeeklyTasks();
-                setWeeklyTasks(weekly_tasks);
-            } catch(error) {
-                console.error('failed to load weekly tasks:', error);
-            }
-        }
+      loadWeeklyTasks();
 
-        async function loadMonthlyTask() {
-            try{
-                const monthly_task = await getMonthlyTask();
-                setMonthlyTask(monthly_task);
-            } catch(error) {
-                console.error('failed to load weekly tasks:', error);
-            }
-        }
+      loadMonthlyTask();
 
-        async function loadOverdueTasks() {
-            try{
-                const overdue_tasks = await getOverdueTasks();
-                setOverdueTasks(overdue_tasks);
-            } catch(error) {
-                console.error('failed to load overdue tasks:', error);
-            }
-        }
+      loadOverdueTasks();
 
-        async function loadUpcommingTasks() {
-            try{
-                const upcomming_tasks = await getUpcommingTasks();
-                setUpcommingTasks(upcomming_tasks);
-            } catch(error) {
-                console.error('failed to load overdue tasks:', error);
-            }
-        }
+      loadUpcommingTasks();
 
-        loadDailyTasks();
+    }, []);
 
-        loadWeeklyTasks();
+  async function reloadTasks() {
+    loadDailyTasks();
 
-        loadMonthlyTask();
+    loadWeeklyTasks();
 
-        loadOverdueTasks();
+    loadMonthlyTask();
 
-        loadUpcommingTasks();
-    });
+    loadOverdueTasks();
+
+    loadUpcommingTasks();
+
+    setEditingTask(dailyTasks[0]);
+  }
 
 
   //filters the tasks based on the buttons
@@ -197,9 +218,71 @@ export default function HomePage() {
         setTaskType("daily");
         setDueDate(today);
 
-        console.log("New Task Added!");
     } catch (error) {
         console.error("Failed to add task:", error);
+    }
+
+    reloadTasks()
+  }
+
+  const [titleEdit, setTitleEdit] = useState("");
+  const [discriptionEdit, setDiscriptionEdit] = useState("");
+  const [taskTypeEdit, setTaskTypeEdit] = useState("daily");
+  const [dueDateEdit, setDueDateEdit] = useState(today);
+  const [workspaceIdEdit, setWorkspaceIdEdit] = useState<number | null>(null);
+
+  function openEditTask(task: Task) {
+      setEditingTask(task);
+
+      setTitleEdit(task.title);
+      setDiscriptionEdit(task.description ?? "");
+      setTaskTypeEdit(task.task_type);
+      setDueDateEdit(task.due_date);
+      setWorkspaceIdEdit(task.workspace_id);
+
+      const dialog = document.getElementById("EditTaskOverlay");
+
+      if (dialog instanceof HTMLDialogElement) {
+          dialog.showModal();
+      }
+  }
+
+  async function EditTask(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+
+    if (editingTask === null) {
+        console.error("Please select a task before trying to edit.");
+        return;
+    }
+
+    if (workspaceIdEdit === null) {
+        console.error("Please select a workspace.");
+        return;
+    }
+
+    try {
+        await editTask(
+            editingTask.id,
+            editingTask.occurrence_id,
+            titleEdit,
+            discriptionEdit,
+            workspaceIdEdit,
+            taskTypeEdit,
+            dueDateEdit
+        );
+
+        await reloadTasks();
+
+        const dialog = document.getElementById("EditTaskOverlay");
+
+        if (dialog instanceof HTMLDialogElement) {
+            dialog.close();
+        }
+        setEditingTask(null);
+
+        console.log("Task edited!");
+    } catch (error) {
+        console.error("Failed to edit task:", error);
     }
 }
 
@@ -223,6 +306,44 @@ export default function HomePage() {
   const progress = totalTasks > 0
       ? (completedTasks / totalTasks) * 100
       : 0;
+
+  let overviewCompleatedText = "";
+
+  switch (Math.floor(progress / 10)) {
+      case 0:
+          overviewCompleatedText = "Let's get started!";
+          break;
+      case 1:
+          overviewCompleatedText = "Great start!";
+          break;
+      case 2:
+          overviewCompleatedText = "You're building momentum!";
+          break;
+      case 3:
+          overviewCompleatedText = "Keep it going!";
+          break;
+      case 4:
+          overviewCompleatedText = "You're making great progress!";
+          break;
+      case 5:
+          overviewCompleatedText = "Halfway there!";
+          break;
+      case 6:
+          overviewCompleatedText = "You're smashing it!";
+          break;
+      case 7:
+          overviewCompleatedText = "Nearly there!";
+          break;
+      case 8:
+          overviewCompleatedText = "Look at you go!";
+          break;
+      case 9:
+          overviewCompleatedText = "Almost everything done!";
+          break;
+      case 10:
+          overviewCompleatedText = "All tasks completed!";
+          break;
+  }
 
   return (
     <div className="home-layout">
@@ -290,7 +411,7 @@ export default function HomePage() {
                     </p>
 
                     <p className="overdue-under-title-text">
-                        A good start. Keep going.
+                        {overviewCompleatedText}
                     </p>
 
                     
@@ -352,7 +473,14 @@ export default function HomePage() {
                     <p>Here is todays tasks!</p>
                   </div>
                   
-                  <DailyTasks tasks={filteredDailyTasks} />
+                  {filteredDailyTasks.length != 0 ? (
+                    <DailyTasks tasks={filteredDailyTasks} reloadTasks={reloadTasks} onEditTask={openEditTask} />
+                  ): (
+                    
+                    <p className="no-tasks-text">No tasks found here. Try adding a new task or selecting a different filter.</p>
+                    
+                  )}
+                  
                   
                   <div className="task-type-title">
                     <FontAwesomeIcon icon={faCalendarWeek} />                        
@@ -361,7 +489,14 @@ export default function HomePage() {
                     <p>Here is your weekly tasks!</p>
                   </div>
 
-                  <WeeklyTasks tasks={filteredWeeklyTasks} />
+                  {filteredWeeklyTasks.length != 0 ? (
+                    <WeeklyTasks tasks={filteredWeeklyTasks} reloadTasks={reloadTasks} onEditTask={openEditTask}/>
+                  ): (
+                    
+                    <p className="no-tasks-text">No tasks found here. Try adding a new task or selecting a different filter.</p>
+                    
+                  )}
+                  
                   
                   <div className="add-task-box">
                     <button data-bs-toggle="dialog" data-bs-target="#AddTaskOverlay" data-bs-backdrop="static"><FontAwesomeIcon className="add-task-icon" icon={faPlus} /> Add a task for today</button>
@@ -378,8 +513,15 @@ export default function HomePage() {
                     <h1> <FontAwesomeIcon icon={faCircleExclamation} /> Overdue</h1>
                     <p className="overdue-number" id="overdue-number"> {total_overdue_tasks_num}</p>
                   </div>
-                  <p className="overdue-under-title-text">A new day to get these back on track.</p>
-                  <OverdueTasks tasks={overdueTasks}/>
+                  {overdueTasks.length != 0 ? (
+                    <div>
+                    <p className="overdue-under-title-text">A new day to get these back on track.</p>
+                    <OverdueTasks tasks={overdueTasks} reloadTasks={reloadTasks}/>
+                    </div>
+                  ): (
+                    <p className="overdue-under-title-text">You're all caught up! No overdue tasks. Keep up the great work!</p>
+                  )}
+                  
                   
                 </div>
               
@@ -390,9 +532,9 @@ export default function HomePage() {
                   </div>
                   {upcommingTasks.length > 0 ? (
                     <div>
-                    <p className="overdue-under-title-text">A new day to get these back on track.</p>
+                    <p className="overdue-under-title-text">Here is your upcomming tasks.</p>
                   
-                    <UpcommingTasks tasks={upcommingTasks}/>
+                    <UpcommingTasks tasks={upcommingTasks} reloadTasks={reloadTasks}/>
                   </div>
                 ) : (
                 <div>
@@ -498,6 +640,114 @@ export default function HomePage() {
           <div className="dialog-footer">
             <button type="button" className="btn-solid theme-secondary add-task-cancel-btn" data-bs-dismiss="dialog">Cancel</button>
             <button type="submit" className="btn-solid theme-secondary add-task-submit-btn" data-bs-dismiss="dialog"><FontAwesomeIcon icon={faPlus} />Create Task</button>
+          </div>
+          </form>
+        </dialog>
+
+
+         {/* edit task overlay */}
+        <dialog className="dialog add-task-dialog" id="EditTaskOverlay">
+          <div className="dialog-header">
+            <h1 className="dialog-title">Edit task</h1>
+            
+          </div>
+          <form onSubmit={EditTask}>
+          <div className="dialog-body">
+            
+            <div className="add-task-input-box">
+              <h5>Task Name</h5>
+              <input className="add-task-text-input" type="text" id="taskName" value={titleEdit} placeholder="Enter Task Name" required onChange={e => setTitleEdit(e.target.value)}></input>
+            </div>
+
+            <div className="add-task-input-box">
+              <h5>Notes</h5>
+              <input type="text" className="add-task-text-input" id="taskNote" placeholder="Enter Notes" value={discriptionEdit} onChange={e => setDiscriptionEdit(e.target.value)}></input>
+            </div>
+
+            <div className="add-task-input-box">
+              <h5>Task Type</h5>
+              <div className="add-task-type-radio-slot">
+
+                <label className="add-task-type-radio-box">
+                    <div className="add-task-radio-top">
+                        <h5>Daily</h5>
+                        <input type="radio" checked={taskTypeEdit === "daily"} name="taskType" value="daily" onChange={e => setTaskTypeEdit(e.target.value)} />
+                    </div>
+
+                    <p>An everyday task</p>
+                </label>
+
+                <label className="add-task-type-radio-box">
+                    <div className="add-task-radio-top">
+                        <h5>Weekly</h5>
+                        <input type="radio" checked={taskTypeEdit === "weekly"} name="taskType" value="weekly" onChange={e => setTaskTypeEdit(e.target.value)}/>
+                    </div>
+
+                    <p>For the same day each week</p>
+                </label>
+
+                <label className="add-task-type-radio-box">
+                    <div className="add-task-radio-top">
+                        <h5>Monthly</h5>
+                        <input type="radio" checked={taskTypeEdit === "monthly"} name="taskType" value="monthly" onChange={e => setTaskTypeEdit(e.target.value)}/>
+                    </div>
+
+                    <p>For the same day each month</p>
+                </label>
+
+              </div>
+
+              <div className="add-task-date-collection-slot">
+                <div className="add-task-input-box">
+                  <h5>Squedualed Date</h5>
+                  <input className="add-task-text-input" required id="taskDate" type="date" value={dueDateEdit} onChange={e => setDueDateEdit(e.target.value)}></input>
+                </div>
+              
+
+                <div className="add-task-input-box">
+                    <h5>Workspace</h5>
+
+                    <select
+                        className="add-task-collection"
+                        id="Workspace"
+                        value={workspaceIdEdit ?? ""}
+                        onChange={e => setWorkspaceIdEdit(Number(e.target.value))}
+                        required
+                    >
+                        {workspaces.map(workspace => (
+                            <option key={workspace.id} value={workspace.id}>
+                                {workspace.name}
+                            </option>
+                        ))}
+                    </select>
+                </div>
+              </div>
+            </div>
+            
+            
+          </div>
+          <div className="dialog-footer">
+            <button
+              type="button"
+              className="btn-solid theme-secondary add-task-cancel-btn"
+              onClick={() => {
+                  const dialog = document.getElementById("EditTaskOverlay");
+
+                  if (dialog instanceof HTMLDialogElement) {
+                      dialog.close();
+                  }
+                  setEditingTask(null);
+              }}
+          >
+              Cancel
+          </button>
+
+          <button
+              type="submit"
+              className="btn-solid theme-secondary add-task-submit-btn"
+          >
+              Save Changes
+          </button>
           </div>
           </form>
         </dialog>

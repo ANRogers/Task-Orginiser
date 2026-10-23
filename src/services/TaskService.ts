@@ -10,6 +10,7 @@ export interface Task {
   description: string | null;
   workspace_id: number;
   workspace_name: string;
+  workspace_colour: string;
   task_type: 'daily' | 'weekly' | 'monthly';
   status: 'todo' | 'completed';
   due_date: string;
@@ -53,6 +54,7 @@ export async function getDailyTasks(): Promise<Task[]> {
       t.description,
       t.workspace_id,
       w.name AS workspace_name,
+      w.colour AS workspace_colour,
       t.task_type,
       o.status,
       o.due_date,
@@ -83,6 +85,7 @@ export async function getWeeklyTasks(): Promise<Task[]> {
       t.description,
       t.workspace_id,
       w.name AS workspace_name,
+      w.colour AS workspace_colour,
       t.task_type,
       o.status,
       o.due_date,
@@ -113,6 +116,7 @@ export async function getMonthlyTask(): Promise<Task[]> {
       t.description,
       t.workspace_id,
       w.name AS workspace_name,
+      w.colour AS workspace_colour,
       t.task_type,
       o.status,
       o.due_date,
@@ -143,6 +147,7 @@ export async function getOverdueTasks(): Promise<Task[]> {
       t.description,
       t.workspace_id,
       w.name AS workspace_name,
+      w.colour AS workspace_colour,
       t.task_type,
       o.status,
       o.due_date,
@@ -173,6 +178,7 @@ export async function getUpcommingTasks(): Promise<Task[]> {
       t.description,
       t.workspace_id,
       w.name AS workspace_name,
+      w.colour AS workspace_colour,
       t.task_type,
       o.status,
       o.due_date,
@@ -214,6 +220,7 @@ export async function setTaskCompleted(
 export async function addTask(title: string, description: string, workspace_id: number, taskType: string, dueDate: string) {
   const db = await getDatabase();
 
+  //add data to task table and get back id
   const result = await db.select<{ id: number }[]>(
       `INSERT INTO tasks (
           title,
@@ -229,7 +236,7 @@ export async function addTask(title: string, description: string, workspace_id: 
 
   const task_id = result[0]?.id;
 
-  
+  //use id to add due day to task_occurrenes
   await db.execute(
     `INSERT INTO task_occurrences( task_id,
     status,
@@ -238,6 +245,37 @@ export async function addTask(title: string, description: string, workspace_id: 
   VALUES ($1, 'todo', $2)`,
   [task_id,dueDate]
   );
+}
+
+export async function editTask(
+    task_id: number,
+    occurrence_id: number,
+    title: string,
+    description: string,
+    workspace_id: number,
+    taskType: string,
+    dueDate: string
+) {
+    const db = await getDatabase();
+
+    // Update the existing task
+    await db.execute(
+        `UPDATE tasks
+         SET title = $1,
+             description = $2,
+             workspace_id = $3,
+             task_type = $4
+         WHERE id = $5`,
+        [title, description, workspace_id, taskType, task_id]
+    );
+
+    // Update the existing occurrence's due date
+    await db.execute(
+        `UPDATE task_occurrences
+         SET due_date = $1
+         WHERE id = $2 AND task_id = $3`,
+        [dueDate, occurrence_id, task_id]
+    );
 }
 
 export async function deleteTask(taskId: number): Promise<void>{

@@ -6,7 +6,7 @@ import {
 } from '../services/TaskService';
 import '../styles/Tasks.css'
 
-export default function OverdueTasks({ tasks }: { tasks: Task[] }) {
+export default function OverdueTasks({ tasks, reloadTasks }: { tasks: Task[], reloadTasks: () => Promise<void> }) {
     
     const [selectedTask, setSelectedTask] = useState<Task | null>(null);
 
@@ -42,7 +42,7 @@ export default function OverdueTasks({ tasks }: { tasks: Task[] }) {
                 <div className="task-text-slot ">
                     <h1>{task.title}</h1>
                     <div className="side-bar-task-info">
-                    <p className="collections-text">{task.workspace_name}</p>
+                    <p className="collections-text" style={{color: task.workspace_colour}}>{task.workspace_name}</p>
                     <p className="collections-text"> · </p>
                     <p className="collections-text">Due {new Date(task.due_date).toLocaleDateString("en-GB", {month: "short", day: "numeric",})}</p>
                     <p className="collections-text"> · </p>
@@ -72,6 +72,7 @@ export default function OverdueTasks({ tasks }: { tasks: Task[] }) {
                 <button type="button" className="btn-solid theme-primary overdue-confirmation-btn" data-bs-dismiss="dialog" 
                 onClick={async () => {
                 await setTaskCompleted(selectedTask.occurrence_id, (selectedTask.status != 'completed'));
+                await reloadTasks();
                 setSelectedTask(null);
                 }}>Mark As Compleated</button>
             </div>

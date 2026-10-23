@@ -70,6 +70,11 @@
     font-size: 16px;
 }
 
+.no-tasks-text{
+    padding: 5px 20px;
+    color: #7F8797;
+}
+
 .task-text-compleated h1 {
     text-decoration: line-through;
     color: #7F8797;

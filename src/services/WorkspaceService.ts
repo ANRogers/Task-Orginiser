@@ -1,5 +1,6 @@
 import { getDatabase } from '../database';
 
+
 // Types returned by the database
 
 export interface Workspace {
@@ -16,5 +17,13 @@ export async function getWorkspaces(){
     return db.select<Workspace[]>(
         `SELECT * from workspaces`
     );
+}
+
+export async function addWorkspace(name: string, colour: string){
+    const db = await getDatabase();
+
+    db.execute(
+        `INSERT INTO workspaces (name, colour) VALUES ($1, $2)`, [name, colour]
+    )
 }
 

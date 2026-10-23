@@ -7,7 +7,7 @@ import '../styles/Tasks.css'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowRight, } from '@fortawesome/free-solid-svg-icons';
 
-export default function UpcommingTasks({ tasks }: { tasks: Task[] }) {
+export default function UpcommingTasks({ tasks, reloadTasks }: { tasks: Task[], reloadTasks: () => Promise<void> }) {
     
     
 
@@ -33,13 +33,18 @@ export default function UpcommingTasks({ tasks }: { tasks: Task[] }) {
         {tasks.map((task) => (
         <div className="side-bar-task-box up-next-box" key={task.occurrence_id}>
             <input className="daily-task-checkbox" type="checkbox"checked={task.status === 'completed'}
-                onChange={() => 
-                setTaskCompleted(task.occurrence_id, (task.status != 'completed'))
-                }></input>
+                onChange={async () => {
+                    await setTaskCompleted(
+                        task.occurrence_id,
+                        task.status !== 'completed'
+                    );
+
+                    await reloadTasks();
+                }}></input>
             <div className={task.status === 'completed' ? "task-text-slot task-text-compleated": "task-text-slot "}>
                 <h1>{task.title}</h1>
                 <div className="side-bar-task-info">
-                <p className="collections-text">{task.workspace_name}</p>
+                <p className="collections-text" style={{color: task.workspace_colour}}>{task.workspace_name}</p>
                 <p className="collections-text"> · </p>
                 <p className="collections-text">{task.task_type}</p>
                 </div>

@@ -8,7 +8,15 @@ import {
   type Task
 } from '../services/TaskService';
 
-export default function WeeklyTasks({ tasks }: { tasks: Task[] }) {
+
+export default function WeeklyTasks({    tasks,
+        reloadTasks,
+        onEditTask
+    }: {
+        tasks: Task[];
+        reloadTasks: () => Promise<void>;
+        onEditTask: (task: Task) => void;
+    }) {
 
     return(
     <div className="daily-tasks-slot">
@@ -17,14 +25,19 @@ export default function WeeklyTasks({ tasks }: { tasks: Task[] }) {
                     <div className="daily-task-box" key={task.occurrence_id}>
                       <div className="daily-task-box-left">
                         <input className="daily-task-checkbox" type="checkbox" checked={task.status === 'completed'}
-                        onChange={() => 
-                        setTaskCompleted(task.occurrence_id, (task.status != 'completed'))
-                    }
-                        ></input>
+                        onChange={async () => {
+                          await setTaskCompleted(
+                              task.occurrence_id,
+                              task.status !== 'completed'
+                          );
+
+                          await reloadTasks();
+                        }}>
+                        </input>
                         <div className={task.status === 'completed' ? "task-text-slot task-text-compleated": "task-text-slot "}>
                           <h1>{task.title}</h1> 
                           <div className="side-bar-task-info">
-                          <p className="collections-text">{task.workspace_name}</p>
+                          <p className="collections-text" style={{color: task.workspace_colour}}>{task.workspace_name}</p>
                           <p className="collections-text"> · </p>
                           <p className="collections-text">Due {new Date(task.due_date).toLocaleDateString("en-GB", {month: "short", day: "numeric",})}</p>
                           </div>
@@ -40,8 +53,13 @@ export default function WeeklyTasks({ tasks }: { tasks: Task[] }) {
                               <FontAwesomeIcon icon={faEllipsisVertical} />
                           </button>
                           <div className="menu">
-                            <a className="menu-item" onClick={() => deleteTask(task.id)}>Delete task</a>
-                            <a className="menu-item" href="#">Modify task</a>
+                            <a className="menu-item" onClick={async () => {
+                                await deleteTask(task.id);
+                                await reloadTasks();
+                            }}>Delete task</a>
+                            <a className="menu-item" onClick={async () => {
+                                await onEditTask(task);
+                            }}>Modify task</a>
                           </div>
                       </div>
                     </div>
