@@ -4,7 +4,9 @@ import '../styles/Tasks.css'
 
 import {
     setTaskCompleted,
-    deleteTask,
+    archiveTask,
+    addRepeat,
+    removeRepeat,
   type Task
 } from '../services/TaskService';
 
@@ -35,28 +37,68 @@ export default function WeeklyTasks({    tasks,
                         }}>
                         </input>
                         <div className={task.status === 'completed' ? "task-text-slot task-text-compleated": "task-text-slot "}>
-                          <h1>{task.title}</h1> 
-                          <div className="side-bar-task-info">
-                          <p className="collections-text" style={{color: task.workspace_colour}}>{task.workspace_name}</p>
-                          <p className="collections-text"> · </p>
-                          <p className="collections-text">Due {new Date(task.due_date).toLocaleDateString("en-GB", {month: "short", day: "numeric",})}</p>
-                          </div>
+                          <a className='discription-collapse' data-bs-toggle="collapse" href={`#collapsediscription-${task.id}`} role="button" aria-expanded="false" aria-controls="collapseExample">
+                            <h1>{task.title}</h1> 
+                            <div className="side-bar-task-info">
+                            <p className="collections-text" style={{color: task.workspace_colour}}>{task.workspace_name}</p>
+                            <p className="collections-text"> · </p>
+                            <p className="collections-text">Due {new Date(task.due_date).toLocaleDateString("en-GB", {month: "short", day: "numeric",})}</p>
+                            </div>
+                            </a>
+                        <div className="collapse" id={`collapsediscription-${task.id}`}>
+                            <div>
+                                {task.description}
+                            </div>
+                        </div>
+                          
                         </div>
                       </div>
                       <div className="daily-task-box-right">
-                          <button className="repeat-daily-btn">
-                              <FontAwesomeIcon icon={faRepeat} />
-                              Weekly
-                          </button>
+                        {["daily", "weekly", "monthly"].includes(task.task_type) && (
+                        task.recurrence_id == null ? (
+                            <button
+                            className="repeat-daily-btn"
+                            type="button"
+                            onClick={async () => {
+                                await addRepeat(
+                                    task.id,
+                                    task.task_type,
+                                    1,
+                                    task.due_date
+                                );
+    
+                                await reloadTasks();
+                            }}
+                            >
+                            <FontAwesomeIcon icon={faRepeat} />
+                            Weekly
+                            </button>
+                        ) : (
+                            <button
+                            className="repeat-daily-btn repeat-btn-active"
+                            type="button"
+                            onClick={async () => {
+                                await removeRepeat(
+                                    task.id,
+                                );
+    
+                                await reloadTasks();
+                            }}
+                            >
+                            <FontAwesomeIcon icon={faRepeat} />
+                            Weekly
+                            </button>
+                        )
+                        )}
 
                           <button className="task-options-btn" type="button" aria-label="Task options" data-bs-toggle="menu" aria-expanded="false">
                               <FontAwesomeIcon icon={faEllipsisVertical} />
                           </button>
                           <div className="menu">
                             <a className="menu-item" onClick={async () => {
-                                await deleteTask(task.id);
+                                await archiveTask(task.id);
                                 await reloadTasks();
-                            }}>Delete task</a>
+                            }}>Archive task</a>
                             <a className="menu-item" onClick={async () => {
                                 await onEditTask(task);
                             }}>Modify task</a>

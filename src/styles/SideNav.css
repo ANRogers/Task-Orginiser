@@ -99,3 +99,13 @@
   width: 20%;
 
 }
+
+.workspace-nav-link {
+    color: inherit;
+    text-decoration: none;
+}
+
+.workspace-nav-link:hover {
+    color: inherit;
+    text-decoration: none;
+}

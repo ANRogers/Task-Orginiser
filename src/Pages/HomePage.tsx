@@ -9,15 +9,15 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { 
   faPlus, faCircleExclamation, faArrowRight, 
   faSquareArrowUpRight, faTableList, faSun, faMoon,
-  faCalendarWeek, faList, faCircleCheck, faClock
+  faCalendarWeek, faList, faCircleCheck, faClock, faCalendarDays
  } from '@fortawesome/free-solid-svg-icons';
 
 import {
-  getDailyTasks,
-  getWeeklyTasks,
+  getTodaysDailyTasks,
+  getTodaysWeeklyTasks,
   getOverdueTasks,
   getUpcommingTasks,
-  getMonthlyTask,
+  getTodaysMonthlyTasks,
   addTask,
   editTask,
 
@@ -35,6 +35,7 @@ import WeeklyTasks from "../Components/WeeklyTasks";
 import OverdueTasks from "../Components/OverdueTasks";
 import UpcommingTasks from "../Components/UpcommingTasks";
 import MonthlyTask from "../Components/MonthlyTask";
+
 
   
 export default function HomePage() {
@@ -80,7 +81,7 @@ export default function HomePage() {
   //loads daily and weekly tasks;
   const [dailyTasks, setDailyTasks] = useState<Task[]>([]);
   const [weeklyTasks, setWeeklyTasks] = useState<Task[]>([]);
-  const [monthlyTask, setMonthlyTask] = useState<Task[]>([]);
+  const [monthlyTasks, setMonthlyTasks] = useState<Task[]>([]);
   const [overdueTasks, setOverdueTasks] = useState<Task[]>([]);
   const [upcommingTasks, setUpcommingTasks] = useState<Task[]>([]);
 
@@ -88,7 +89,7 @@ export default function HomePage() {
 
     async function loadDailyTasks() {
         try{
-            const daily_tasks = await getDailyTasks();
+            const daily_tasks = await getTodaysDailyTasks();
             setDailyTasks(daily_tasks);
         } catch(error) {
             console.error('failed to load daily tasks:', error);
@@ -97,7 +98,7 @@ export default function HomePage() {
 
     async function loadWeeklyTasks() {
         try{
-            const weekly_tasks = await getWeeklyTasks();
+            const weekly_tasks = await getTodaysWeeklyTasks();
             setWeeklyTasks(weekly_tasks);
         } catch(error) {
             console.error('failed to load weekly tasks:', error);
@@ -106,8 +107,8 @@ export default function HomePage() {
 
     async function loadMonthlyTask() {
         try{
-            const monthly_task = await getMonthlyTask();
-            setMonthlyTask(monthly_task);
+            const monthly_tasks = await getTodaysMonthlyTasks();
+            setMonthlyTasks(monthly_tasks);
         } catch(error) {
             console.error('failed to load weekly tasks:', error);
         }
@@ -496,6 +497,21 @@ export default function HomePage() {
                     <p className="no-tasks-text">No tasks found here. Try adding a new task or selecting a different filter.</p>
                     
                   )}
+
+                  <div className="task-type-title">
+                    <FontAwesomeIcon icon={faCalendarDays} />                        
+                    <h1>Monthly Tasks</h1>
+                    
+                    <p>Here is your monthly tasks!</p>
+                  </div>
+
+                  {monthlyTasks.length != 0 ? (
+                    <WeeklyTasks tasks={monthlyTasks} reloadTasks={reloadTasks} onEditTask={openEditTask}/>
+                  ): (
+                    
+                    <p className="no-tasks-text">No tasks found here. Try adding a new task or selecting a different filter.</p>
+                    
+                  )}
                   
                   
                   <div className="add-task-box">
@@ -504,7 +520,7 @@ export default function HomePage() {
                   </div>
                 </div>
 
-                <MonthlyTask task={monthlyTask}/>
+                <MonthlyTask task={monthlyTasks}/>
                 
               </div>
               <div className="overdue-tasks-slot">
@@ -514,9 +530,17 @@ export default function HomePage() {
                     <p className="overdue-number" id="overdue-number"> {total_overdue_tasks_num}</p>
                   </div>
                   {overdueTasks.length != 0 ? (
-                    <div>
-                    <p className="overdue-under-title-text">A new day to get these back on track.</p>
-                    <OverdueTasks tasks={overdueTasks} reloadTasks={reloadTasks}/>
+                    <div className="side-bar-tasks-slot">
+                      <p className="overdue-under-title-text">
+                          A new day to get these back on track.
+                      </p>
+
+                      <div className="side-bar-tasks-scroll">
+                          <OverdueTasks
+                              tasks={overdueTasks}
+                              reloadTasks={reloadTasks}
+                          />
+                      </div>
                     </div>
                   ): (
                     <p className="overdue-under-title-text">You're all caught up! No overdue tasks. Keep up the great work!</p>
@@ -527,15 +551,22 @@ export default function HomePage() {
               
                 <div className="upcomeing-tasks">
                   <div className="todays-tasks-title">
-                    <h1>Up Next</h1>
+                    <h1>Due Tomorrow</h1>
                     <p className="task-number" id="upcomming-number"> {total_upcomeing_tasks_num}</p>
                   </div>
                   {upcommingTasks.length > 0 ? (
-                    <div>
-                    <p className="overdue-under-title-text">Here is your upcomming tasks.</p>
-                  
-                    <UpcommingTasks tasks={upcommingTasks} reloadTasks={reloadTasks}/>
-                  </div>
+                    <div className="side-bar-tasks-slot">
+                      <p className="overdue-under-title-text">
+                          Here are your tasks due tomrrow.
+                      </p>
+
+                      <div className="side-bar-tasks-scroll">
+                          <UpcommingTasks
+                              tasks={upcommingTasks}
+                              reloadTasks={reloadTasks}
+                          />
+                      </div>
+                    </div>
                 ) : (
                 <div>
                   <p className="overdue-under-title-text">No Upcomming tasks tomrrow!</p>

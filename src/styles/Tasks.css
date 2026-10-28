@@ -1,8 +1,12 @@
+.daily-task-slot{
+    margin-bottom: 5px;
+}
 .daily-task-box {
     display: flex;
     align-items: center;
     padding: 22px 14px;
     border-bottom: 1px solid #2A313B;
+    
 }
 
 .daily-task-box-left {
@@ -141,6 +145,10 @@
     color: #F5F7FA;
 }
 
+.discription-collapse{
+    text-decoration: none;
+    color: inherit;
+}
 .add-task-box{
   padding: 14px 11px;
   
@@ -408,4 +416,210 @@
     color: #8B91FF;
     font-size: 16px;
     cursor: pointer;
+}
+
+/* Schedule task dialog */
+.schedule-task-dialog {
+  width: min(500px, calc(100% - 32px));
+  max-width: none;
+  max-height: calc(100% - 40px);
+  padding: 0;
+  border: 1px solid #303747;
+  border-radius: 14px;
+  background: #191e29;
+  color: #f2f3f8;
+  overflow: auto;
+}
+
+.schedule-task-dialog::backdrop {
+  background: rgb(0 0 0 / 65%);
+  backdrop-filter: blur(4px);
+}
+
+.schedule-task-dialog .schedule-task-header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 24px;
+  border-bottom: 1px solid #303747;
+}
+
+.schedule-task-heading-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
+  background: #302f65;
+  color: #b7b4ff;
+  font-size: 1.2rem;
+}
+
+.schedule-task-dialog .dialog-title {
+  margin: 0 0 5px;
+  font-size: 1.3rem;
+}
+
+.schedule-task-header p {
+  margin: 0;
+  color: #a0a8ba;
+  font-size: 0.9rem;
+}
+
+.schedule-task-dialog .schedule-task-body {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 24px;
+}
+
+.schedule-task-label {
+  display: block;
+  margin: 0;
+  color: #aeb7ca;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+}
+
+.schedule-task-preview {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 16px;
+  margin-bottom: 12px;
+  border: 1px solid #303747;
+  border-radius: 10px;
+  background: #111620;
+}
+
+.schedule-task-preview > svg {
+  flex-shrink: 0;
+  color: #aaa5ff;
+  font-size: 1.3rem;
+}
+
+.schedule-task-preview-text {
+  min-width: 0;
+}
+
+.schedule-task-preview h3 {
+  margin: 0 0 5px;
+  overflow-wrap: anywhere;
+  color: #f2f3f8;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.schedule-task-preview p {
+  margin: 0;
+  color: #9ba5b8;
+  font-size: 0.85rem;
+}
+
+.schedule-task-dialog .add-task-date-collection-slot,
+.schedule-task-dialog .add-task-input-box {
+  width: 100%;
+}
+
+.schedule-task-dialog .add-task-input-box h5 {
+  margin-bottom: 10px;
+}
+
+.schedule-task-date-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 0 12px;
+  border: 1px solid #363d4d;
+  border-radius: 9px;
+  background: #111620;
+  color: #aaa5ff;
+}
+
+.schedule-task-date-wrapper:focus-within {
+  border-color: #7167ee;
+  box-shadow: 0 0 0 3px #7167ee25;
+}
+
+.schedule-task-dialog .add-task-text-input {
+  flex: 1;
+  width: 100%;
+  min-width: 0;
+  min-height: 46px;
+  box-sizing: border-box;
+  padding: 10px 0;
+  border: none;
+  outline: none;
+  background: transparent;
+  color: #f2f3f8;
+  color-scheme: dark;
+}
+
+.schedule-task-dialog .add-task-text-input:focus {
+  border: none;
+  box-shadow: none;
+}
+
+.schedule-task-hint {
+  display: flex;
+  align-items: flex-start;
+  gap: 9px;
+  margin-top: 8px;
+  color: #858fa3;
+}
+
+.schedule-task-hint svg {
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.schedule-task-hint p {
+  margin: 0;
+  font-size: 0.8rem;
+  line-height: 1.5;
+}
+
+.schedule-task-dialog .schedule-task-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  padding: 16px 24px;
+  border-top: 1px solid #303747;
+}
+
+.schedule-task-dialog .add-task-submit-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border: none;
+  border-radius: 8px;
+  background: #6259dc;
+  color: #fff;
+  transition: background 0.2s ease;
+}
+
+.schedule-task-dialog .add-task-submit-btn:hover:not(:disabled) {
+  background: #756cf0;
+}
+
+.schedule-task-dialog button:disabled {
+  cursor: not-allowed;
+  opacity: 0.65;
+}
+
+@media (max-width: 480px) {
+  .schedule-task-dialog .schedule-task-header,
+  .schedule-task-dialog .schedule-task-body {
+    padding: 18px;
+  }
+
+  .schedule-task-dialog .schedule-task-footer {
+    padding: 14px 18px;
+  }
 }

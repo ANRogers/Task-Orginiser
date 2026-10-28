@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { Link } from 'react-router-dom';
 import '../styles/SideNav.css'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlus, faCalendarDays, faClock, faCircleCheck, faClipboardList, faTableList } from '@fortawesome/free-solid-svg-icons';
@@ -44,12 +45,16 @@ export default function SideNavBar() {
      <div className="nav-sidebar">
         <div className="workspace">
             <h5 className="workspace-title">WORKSPACE</h5>
+            <Link to="/" className="workspace-nav-link">
             <div className="worspace-nav-option">
                 <FontAwesomeIcon icon={faTableList} /> Dashboard
             </div>
+            </Link>
+            <Link to="/tasks" className="workspace-nav-link">
             <div className="worspace-nav-option">
                 <FontAwesomeIcon icon={faCircleCheck} /> Tasks
             </div>
+            </Link>
             <div className="worspace-nav-option">
                 <FontAwesomeIcon icon={faCalendarDays} /> Calander
             </div>
@@ -68,7 +73,7 @@ export default function SideNavBar() {
             </div>
             <div className="collections-option">
                 {workspaces.map((workspace) => (
-                <div className="collection-option-box">
+                <div className="collection-option-box" key={workspace.id}>
                     <div className="collection-option-colour" style={{backgroundColor: workspace.colour}}></div>
                     <h1 className="collection-option-title">{workspace.name}</h1>
                 </div>
