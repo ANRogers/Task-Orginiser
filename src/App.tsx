@@ -8,6 +8,9 @@ import { generateOccurrences } from './recurrence';
 
 import HomePage from './Pages/HomePage';
 import TasksPage from './Pages/TasksPage';
+import CalendarPage from './Pages/CalendarPage';
+
+import TemplatePage from './Pages/TemplatePage';
 
 function App() {
     const [dbReady, setDbReady] = useState(false);
@@ -49,6 +52,8 @@ function App() {
                 <Routes>
                     <Route path="/" element={<HomePage />} />
                     <Route path="/tasks" element={<TasksPage />} />
+                    <Route path="/calendar" element={<CalendarPage />} />
+                    <Route path="/temp" element={<TemplatePage />} />
                 </Routes>
             </main>
         </BrowserRouter>

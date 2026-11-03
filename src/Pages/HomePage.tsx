@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { Link } from 'react-router-dom';
 import * as SunCalc from "suncalc";
 
 import SideNavBar from "../Components/SideNav"
@@ -35,6 +36,7 @@ import WeeklyTasks from "../Components/WeeklyTasks";
 import OverdueTasks from "../Components/OverdueTasks";
 import UpcommingTasks from "../Components/UpcommingTasks";
 import MonthlyTask from "../Components/MonthlyTask";
+import MonthlyTasks from "../Components/MonthlyTasks";
 
 
   
@@ -373,7 +375,7 @@ export default function HomePage() {
             <div className="dash-title-right">
               <div className="dash-date-box">
                 <FontAwesomeIcon icon={is_sun_up ? faSun : faMoon} />
-                {currentTime.toLocaleDateString("en-GB", {
+                {currentTime.toLocaleDateString("en-US", {
                   weekday: "long",
                   month: "long",
                   day: "numeric"
@@ -447,7 +449,7 @@ export default function HomePage() {
                       
                       <h1>Todays Tasks</h1>
                       <p className="task-number" id="task-number"> {total_num_tasks}</p>
-                      <a className="view-all-tasks">View All Tasks <FontAwesomeIcon icon={faSquareArrowUpRight} /></a>
+                      <Link to="/tasks" className="view-all-tasks">View All Tasks <FontAwesomeIcon icon={faSquareArrowUpRight} /></Link>
                     </div>
                     <div className="todays-tasks-options">
 
@@ -506,7 +508,7 @@ export default function HomePage() {
                   </div>
 
                   {monthlyTasks.length != 0 ? (
-                    <WeeklyTasks tasks={monthlyTasks} reloadTasks={reloadTasks} onEditTask={openEditTask}/>
+                    <MonthlyTasks tasks={monthlyTasks} reloadTasks={reloadTasks} onEditTask={openEditTask}/>
                   ): (
                     
                     <p className="no-tasks-text">No tasks found here. Try adding a new task or selecting a different filter.</p>
@@ -539,6 +541,7 @@ export default function HomePage() {
                           <OverdueTasks
                               tasks={overdueTasks}
                               reloadTasks={reloadTasks}
+                              onEditTask={openEditTask}
                           />
                       </div>
                     </div>

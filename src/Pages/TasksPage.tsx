@@ -308,7 +308,7 @@ const filteredTasks = assignFilteredTasks();
             <div className="dash-title-right">
               <div className="dash-date-box">
                 <FontAwesomeIcon icon={is_sun_up ? faSun : faMoon} />
-                {currentTime.toLocaleDateString("en-GB", {
+                {currentTime.toLocaleDateString("en-US", {
                   weekday: "long",
                   month: "long",
                   day: "numeric"

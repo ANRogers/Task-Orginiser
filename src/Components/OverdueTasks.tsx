@@ -2,11 +2,23 @@
 import {useState} from 'react';
 import {
     setTaskCompleted,
+    archiveTask,
+    deleteOccurrence,
     type Task
 } from '../services/TaskService';
 import '../styles/Tasks.css'
 
-export default function OverdueTasks({ tasks, reloadTasks }: { tasks: Task[], reloadTasks: () => Promise<void> }) {
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faEllipsisVertical } from '@fortawesome/free-solid-svg-icons';
+
+export default function OverdueTasks({    tasks,
+    reloadTasks,
+    onEditTask
+}: {
+    tasks: Task[];
+    reloadTasks: () => Promise<void>;
+    onEditTask: (task: Task) => void;
+}) {
     
     const [selectedTask, setSelectedTask] = useState<Task | null>(null);
 
@@ -49,6 +61,33 @@ export default function OverdueTasks({ tasks, reloadTasks }: { tasks: Task[], re
                     <p className="collections-text">
                         { daysOverDue } { daysOverDue == 1 ? ("day"): ("days")} overdue
                     </p>
+                    </div>
+                </div>
+                <div className="task-options-slot">
+                    <button
+                        className="task-options-btn-overdue"
+                        type="button"
+                        aria-label="Task options"
+                        data-bs-toggle="menu"
+                        aria-expanded="false"
+                    >
+                        <FontAwesomeIcon icon={faEllipsisVertical} />
+                    </button>
+
+                    <div className="menu task-menu">
+                        <a className="menu-item task-menu-item" onClick={async () => {
+                            await archiveTask(task.id);
+                            await reloadTasks();
+                        }}>Archive task</a>
+
+                        <a className="menu-item task-menu-item" onClick={async () => {
+                            await onEditTask(task);
+                        }}>Modify task</a>
+
+                        <a className="menu-item task-menu-item-delete" onClick={async () => {
+                            await deleteOccurrence(task.occurrence_id);
+                            await reloadTasks();
+                        }}>Remove task</a>
                     </div>
                 </div>
 

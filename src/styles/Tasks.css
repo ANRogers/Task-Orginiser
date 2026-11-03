@@ -145,6 +145,24 @@
     color: #F5F7FA;
 }
 
+.task-options-btn-overdue {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 8px;
+    background: transparent;
+    border: none;
+    border-radius: 6px;
+    color: #FF8A7D;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.task-options-btn-overdue:hover {
+    background-color: #362824;
+    
+}
+
 .discription-collapse{
     text-decoration: none;
     color: inherit;
@@ -244,6 +262,8 @@
     overflow: hidden;
 }
 
+
+
 .side-bar-tasks-scroll {
     flex: 1;
     min-height: 0;
@@ -305,7 +325,14 @@
     align-items: center;
     
     border-bottom: 1px solid #3A2B24;
+    
 }
+
+.task-options-slot {
+    margin-left: auto;
+    flex-shrink: 0;
+}
+
 
 .overdue-task-checkbox{
     appearance: none;
@@ -611,6 +638,21 @@
 .schedule-task-dialog button:disabled {
   cursor: not-allowed;
   opacity: 0.65;
+}
+
+.task-menu{
+    background-color: #1A1F2A;
+    border: 1px solid #2A313B; 
+}
+
+.task-menu-item:hover{
+    background-color: #1B2140;
+    color: #F5F7FA;
+}
+
+.task-menu-item-delete:hover{
+    background-color: #2A1F1C;
+    color: #F5F7FA;
 }
 
 @media (max-width: 480px) {

@@ -139,10 +139,10 @@ export default function DisplayTasks({
               <FontAwesomeIcon icon={faEllipsisVertical} />
             </button>
 
-            <div className="menu">
+            <div className="menu task-menu">
               <button
                 type="button"
-                className="menu-item"
+                className="menu-item task-menu-item"
                 onClick={async () => {
                   await archiveTask(task.id);
                   await reloadTasks();
@@ -153,7 +153,7 @@ export default function DisplayTasks({
 
               <button
                 type="button"
-                className="menu-item"
+                className="menu-item task-menu-item"
                 onClick={() => onEditTask(task)}
               >
                 Modify task
@@ -161,7 +161,7 @@ export default function DisplayTasks({
 
               <button
                 type="button"
-                className="menu-item"
+                className="menu-item task-menu-item"
                 onClick={() => openScheduleDialog(task.id)}
               >
                 Schedule task

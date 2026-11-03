@@ -7,6 +7,7 @@ import {
     archiveTask,
     addRepeat,
     removeRepeat,
+    deleteOccurrence,
   type Task
 } from '../services/TaskService';
 
@@ -91,18 +92,22 @@ export default function WeeklyTasks({    tasks,
                         )
                         )}
 
-                          <button className="task-options-btn" type="button" aria-label="Task options" data-bs-toggle="menu" aria-expanded="false">
+                            <button className="task-options-btn" type="button" aria-label="Task options" data-bs-toggle="menu" aria-expanded="false">
                               <FontAwesomeIcon icon={faEllipsisVertical} />
-                          </button>
-                          <div className="menu">
-                            <a className="menu-item" onClick={async () => {
+                            </button>
+                            <div className="menu task-menu">
+                            <a className="menu-item task-menu-item" onClick={async () => {
                                 await archiveTask(task.id);
                                 await reloadTasks();
                             }}>Archive task</a>
-                            <a className="menu-item" onClick={async () => {
+                            <a className="menu-item task-menu-item" onClick={async () => {
                                 await onEditTask(task);
                             }}>Modify task</a>
-                          </div>
+                            <a className="menu-item task-menu-item-delete" onClick={async () => {
+                                await deleteOccurrence(task.occurrence_id);
+                                await reloadTasks();
+                            }}>Remove task</a>
+                            </div>
                       </div>
                     </div>
                 

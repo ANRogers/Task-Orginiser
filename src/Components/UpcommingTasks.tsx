@@ -1,13 +1,22 @@
 import {
     setTaskCompleted,
+    deleteOccurrence,
+    archiveTask,
     type Task
 } from '../services/TaskService';
 import '../styles/Tasks.css'
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faArrowRight, } from '@fortawesome/free-solid-svg-icons';
+import { faArrowRight, faEllipsisVertical, } from '@fortawesome/free-solid-svg-icons';
 
-export default function UpcommingTasks({ tasks, reloadTasks }: { tasks: Task[], reloadTasks: () => Promise<void> }) {
+export default function UpcommingTasks({    tasks,
+    reloadTasks,
+    onEditTask
+}: {
+    tasks: Task[];
+    reloadTasks: () => Promise<void>;
+    onEditTask: (task: Task) => void;
+}) {
     
     
 
@@ -31,6 +40,7 @@ export default function UpcommingTasks({ tasks, reloadTasks }: { tasks: Task[], 
         <div className="side-bar-tasks-slot">
         <div className="side-bar-tasks-scroll">
         {tasks.map((task) => (
+        
         <div className="side-bar-task-box up-next-box" key={task.occurrence_id}>
             <input className="daily-task-checkbox" type="checkbox"checked={task.status === 'completed'}
                 onChange={async () => {
@@ -49,7 +59,40 @@ export default function UpcommingTasks({ tasks, reloadTasks }: { tasks: Task[], 
                 <p className="collections-text">{task.task_type}</p>
                 </div>
             </div>
+            
+
+            
+            <div className="task-options-slot">
+                <button
+                    className="task-options-btn"
+                    type="button"
+                    aria-label="Task options"
+                    data-bs-toggle="menu"
+                    aria-expanded="false"
+                >
+                    <FontAwesomeIcon icon={faEllipsisVertical} />
+                </button>
+
+                <div className="menu task-menu">
+                    <a className="menu-item task-menu-item" onClick={async () => {
+                        await archiveTask(task.id);
+                        await reloadTasks();
+                    }}>Archive task</a>
+
+                    <a className="menu-item task-menu-item" onClick={async () => {
+                        await onEditTask(task);
+                    }}>Modify task</a>
+
+                    <a className="menu-item task-menu-item-delete" onClick={async () => {
+                        await deleteOccurrence(task.occurrence_id);
+                        await reloadTasks();
+                    }}>Remove task</a>
+                </div>
             </div>
+            
+
+            </div>
+            
             ))}
         </div>
 
