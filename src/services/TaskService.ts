@@ -334,6 +334,48 @@ export async function getAllTasks(): Promise<Task[]> {
   `);
 }
 
+export async function getAllTasksStats(selectedWorkspace: string): Promise<Task[]> {
+    const db = await getDatabase();
+
+    const workspaceId = selectedWorkspace === "all"
+        ? null
+        : Number(selectedWorkspace);
+
+    return db.select<Task[]>(`
+        SELECT
+            t.id,
+            o.id AS occurrence_id,
+            r.id AS recurrence_id,
+            t.title,
+            t.description,
+            t.workspace_id,
+            w.name AS workspace_name,
+            w.colour AS workspace_colour,
+            t.task_type,
+            o.status,
+            o.due_date,
+            o.completed_at
+        FROM task_occurrences AS o
+        JOIN tasks AS t ON t.id = o.task_id
+        JOIN workspaces AS w ON w.id = t.workspace_id
+        LEFT JOIN task_recurrence AS r ON r.task_id = t.id
+        WHERE
+            t.archived = 0
+            AND (? IS NULL OR t.workspace_id = ?)
+        ORDER BY
+            o.due_date DESC,
+            CASE t.task_type
+                WHEN 'daily' THEN 1
+                WHEN 'weekly' THEN 2
+                WHEN 'monthly' THEN 3
+                ELSE 4
+            END,
+            t.title COLLATE NOCASE
+    `, [workspaceId, workspaceId]);
+}
+
+
+
 
 
 // Mark a task occurrence as completed or incomplete

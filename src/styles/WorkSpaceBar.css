@@ -13,6 +13,8 @@
 
 .workspace-info .workspace-actions{
   margin-left: auto;
+  display: flex;
+  gap: 8px;
 }
 .workspace-info .workspace-current {
     padding: 10px;
@@ -45,4 +47,56 @@
 .workspace-info .workspace-actions .topbar-newtask:hover{
   background-color: #5252be;
   border: none;
+}
+
+.workspace-info .workspace-actions .search-bar-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+    width: 250px;
+}
+
+.workspace-info .workspace-actions .search-icon {
+    position: absolute;
+    left: 12px;
+    color: #7F8797;
+    font-size: 14px;
+    pointer-events: none;
+}
+
+.workspace-info .workspace-actions .search-bar-tasks {
+    background-color: #1A1F2A;
+    color: #FFFFFF;
+    border: 1px solid #2A313B;
+    border-radius: 8px;
+    padding: 10px 12px 10px 36px;
+    font-size: 14px;
+    width: 100%;
+    outline: none;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.workspace-info .workspace-actions .search-bar-tasks::placeholder {
+    color: #7F8797;
+}
+
+.workspace-info .workspace-actions .search-bar-tasks:focus {
+    border-color: #5B5BD6;
+    box-shadow: 0 0 0 2px rgba(91, 91, 214, 0.15);
+}
+
+.workspace-filter-select {
+    background-color: #1A1F2A;
+    color: #FFFFFF;
+    border: 1px solid #2A313B;
+    border-radius: 8px;
+    padding: 9px;
+    font-size: 14px;
+    outline: none;
+    cursor: pointer;
+    transition: border-color 0.2s ease;
+}
+
+.workspace-filter-select:focus {
+    border-color: #5B5BD6;
 }

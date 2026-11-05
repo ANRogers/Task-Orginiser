@@ -10,7 +10,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { 
   faPlus, faCircleExclamation, faArrowRight, 
   faSquareArrowUpRight, faTableList, faSun, faMoon,
-  faCalendarWeek, faList, faCircleCheck, faClock, faCalendarDays
+  faCalendarWeek, faList, faCircleCheck, faClock, faCalendarDays, faMagnifyingGlass 
  } from '@fortawesome/free-solid-svg-icons';
 
 import {
@@ -64,6 +64,8 @@ export default function HomePage() {
   const sun_times = SunCalc.getTimes(currentTime,latitude,longitude);
 
   const is_sun_up = currentTime >= sun_times.sunrise && currentTime < sun_times.sunset;
+
+  const [selectedWorkspaceFilter, setSelectedWorkspaceFilter] = useState("all");
 
   const [workspaces, setWorkspaces] = useState<Workspace[]>([]);
 
@@ -166,8 +168,40 @@ export default function HomePage() {
 
 
   //filters the tasks based on the buttons
+  const [searchQuery, setSearchQuery] = useState("");
+
+  function searchTasks(tasks: Task[]): Task[] {
+    const query = searchQuery.toLowerCase().trim();
+
+    if (!query) return tasks;
+
+    return tasks.filter(task =>
+        task.title.toLowerCase().includes(query) ||
+        task.description?.toLowerCase().includes(query)
+    );
+  }
+  function filterTasksByWorkspace(tasks: Task[]): Task[] {
+      if (selectedWorkspaceFilter === "all") return tasks;
+
+      return tasks.filter(task =>
+          task.workspace_id === Number(selectedWorkspaceFilter)
+      );
+  }
+
+  const filteredDailySearchTasks = filterTasksByWorkspace(searchTasks(dailyTasks));
+  const filteredWeeklySearchTasks = filterTasksByWorkspace(searchTasks(weeklyTasks));
+  const filteredMonthlySearchTasks = filterTasksByWorkspace(searchTasks(monthlyTasks));
+
+  const filteredOverdueTasks = filterTasksByWorkspace(searchTasks(overdueTasks));
+  const filteredUpcommingTasks = filterTasksByWorkspace(searchTasks(upcommingTasks));
+
+  
+
+  
+  
+
   const [taskFilter, setTaskFilter] = useState("all");
-  const filteredDailyTasks = dailyTasks.filter(task =>{
+  const filteredDailyTasks = filteredDailySearchTasks.filter(task =>{
     if (taskFilter === "todo"){
       return task.status !== "completed";
     }
@@ -179,7 +213,19 @@ export default function HomePage() {
     return true;
   });
 
-  const filteredWeeklyTasks = weeklyTasks.filter(task =>{
+  const filteredWeeklyTasks = filteredWeeklySearchTasks.filter(task =>{
+    if (taskFilter === "todo"){
+      return task.status !== "completed";
+    }
+
+    if (taskFilter === "compleated"){
+      return task.status === "completed";
+    }
+
+    return true;
+  });
+
+  const filteredMonthlyTasks = filteredMonthlySearchTasks.filter(task =>{
     if (taskFilter === "todo"){
       return task.status !== "completed";
     }
@@ -360,6 +406,30 @@ export default function HomePage() {
                 <span>Dashboard</span>
             </div>
             <div className="workspace-actions">
+              <div className="search-bar-container">
+                  <FontAwesomeIcon icon={faMagnifyingGlass} className="search-icon" />
+
+                  <input
+                      className="search-bar-tasks"
+                      type="text"
+                      placeholder="Search your tasks"
+                      value={searchQuery}
+                      onChange={e => setSearchQuery(e.target.value)}
+                  />
+              </div>
+              <select
+                  className="workspace-filter-select"
+                  value={selectedWorkspaceFilter}
+                  onChange={e => setSelectedWorkspaceFilter(e.target.value)}
+              >
+                  <option value="all">All Collections</option>
+
+                  {workspaces.map(workspace => (
+                      <option key={workspace.id} value={String(workspace.id)}>
+                          {workspace.name}
+                      </option>
+                  ))}
+              </select>
               <button data-bs-toggle="dialog" data-bs-target="#AddTaskOverlay" data-bs-backdrop="static" className="topbar-newtask">
                 <FontAwesomeIcon icon={faPlus} /> New Task
               </button>
@@ -508,7 +578,7 @@ export default function HomePage() {
                   </div>
 
                   {monthlyTasks.length != 0 ? (
-                    <MonthlyTasks tasks={monthlyTasks} reloadTasks={reloadTasks} onEditTask={openEditTask}/>
+                    <MonthlyTasks tasks={filteredMonthlyTasks} reloadTasks={reloadTasks} onEditTask={openEditTask}/>
                   ): (
                     
                     <p className="no-tasks-text">No tasks found here. Try adding a new task or selecting a different filter.</p>
@@ -531,7 +601,7 @@ export default function HomePage() {
                     <h1> <FontAwesomeIcon icon={faCircleExclamation} /> Overdue</h1>
                     <p className="overdue-number" id="overdue-number"> {total_overdue_tasks_num}</p>
                   </div>
-                  {overdueTasks.length != 0 ? (
+                  {filteredOverdueTasks.length != 0 ? (
                     <div className="side-bar-tasks-slot">
                       <p className="overdue-under-title-text">
                           A new day to get these back on track.
@@ -539,7 +609,7 @@ export default function HomePage() {
 
                       <div className="side-bar-tasks-scroll">
                           <OverdueTasks
-                              tasks={overdueTasks}
+                              tasks={filteredOverdueTasks}
                               reloadTasks={reloadTasks}
                               onEditTask={openEditTask}
                           />
@@ -557,7 +627,7 @@ export default function HomePage() {
                     <h1>Due Tomorrow</h1>
                     <p className="task-number" id="upcomming-number"> {total_upcomeing_tasks_num}</p>
                   </div>
-                  {upcommingTasks.length > 0 ? (
+                  {filteredUpcommingTasks.length > 0 ? (
                     <div className="side-bar-tasks-slot">
                       <p className="overdue-under-title-text">
                           Here are your tasks due tomrrow.
@@ -565,8 +635,9 @@ export default function HomePage() {
 
                       <div className="side-bar-tasks-scroll">
                           <UpcommingTasks
-                              tasks={upcommingTasks}
+                              tasks={filteredUpcommingTasks}
                               reloadTasks={reloadTasks}
+                              onEditTask={openEditTask}
                           />
                       </div>
                     </div>
@@ -575,7 +646,7 @@ export default function HomePage() {
                   <p className="overdue-under-title-text">No Upcomming tasks tomrrow!</p>
                   <div className="see-calander-box">
                 
-                  <button className="see-calander-button">See your calendar <FontAwesomeIcon icon={faArrowRight} /></button>
+                  <Link to="/calendar" className="see-calander-button">See your calendar <FontAwesomeIcon icon={faArrowRight}/></Link>
             
                   </div>
                 </div>

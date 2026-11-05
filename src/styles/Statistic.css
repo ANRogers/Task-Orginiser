@@ -126,6 +126,7 @@
     justify-content: space-between;
     align-items: center;
     width: 100%;
+    
 }
 
 .pie-chart-legend-box p{
@@ -199,37 +200,173 @@
     font-size: 16px;
 }
 
-/* task compleation history */
-.task-compleation-history-slot{
+/* Task completion history */
+.task-compleation-history-slot {
     background-color: #1A1F2A;
     border-radius: 16px;
     border: 1px solid #2A313B;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    min-height: 0;
+    overflow: hidden;
 }
 
-.task-compleation-title{
+.task-compleation-title {
     padding: 20px;
+    flex-shrink: 0;
 }
 
-.task-compleation-title h2{
+.task-compleation-title h2 {
     font-size: 18px;
-    font-weight: 700px;
+    font-weight: 700;
 }
 
-.task-compleation-title p{
+.task-compleation-title p {
     font-size: 12px;
     color: #AAB2C0;
 }
 
-.task-compleation-table-top{
-    padding: 5px 20px;
-    border: 1px solid #2A313B;
-    background-color: #1B212A;
+/* Grid container */
+.task-compleation-grid {
     display: flex;
-    justify-content: space-between;
+    flex-direction: column;
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
 }
 
-.task-compleation-table-top p{
+/* Grid rows */
+.task-compleation-row {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1.2fr 1.5fr 1.2fr;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 20px;
+    border-bottom: 1px solid #2A313B;
+}
+
+.task-compleation-row p {
     margin: 0;
     font-size: 12px;
     color: #AAB2C0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* Column headings */
+.task-compleation-header {
+    position: sticky;
+    top: 0;
+    background-color: #1B212A;
+    border-top: 1px solid #2A313B;
+    border-bottom: 1px solid #2A313B;
+    z-index: 2;
+}
+
+.task-compleation-header p {
+    color: #AAB2C0;
+    font-weight: 600;
+}
+
+/* Timing status */
+.task-to-do {
+    color: #AAB2C0 !important;
+}
+
+.task-overdue {
+    color: #FF8A7D !important;
+}
+
+.completed-on-time {
+    color: #8B91FF !important;
+}
+
+.completed-late {
+    color: #F2B86A !important;
+}
+
+/* Empty state */
+.task-compleation-empty {
+    text-align: center;
+    padding: 25px;
+    color: #AAB2C0;
+    font-size: 13px;
+}
+
+.stats-collection-select {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.stats-date-range {
+    display: flex;
+    align-items: flex-end;
+    gap: 10px;
+}
+
+.stats-date-input {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.stats-date-input label {
+    font-size: 11px;
+    color: #AAB2C0;
+}
+
+.stats-date-input input {
+    background: #1A1F2A;
+    color: white;
+    border: 1px solid #2A313B;
+    border-radius: 6px;
+    padding: 5px 7px;
+    font-size: 11px;
+    height: 30px;
+}
+
+.stats-date-separator {
+    color: #7F8797;
+    font-size: 11px;
+    padding-bottom: 7px;
+}
+
+.stats-chart-controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 15px;
+    margin-bottom: 15px;
+}
+
+
+
+.stats-collection-select label {
+    font-size: 11px;
+    color: #AAB2C0;
+}
+
+.stats-collection-select select {
+    background: #1A1F2A;
+    color: white;
+    border: 1px solid #2A313B;
+    border-radius: 6px;
+    padding: 5px 8px;
+    font-size: 11px;
+    height: 30px;
+    min-width: 150px;
+    cursor: pointer;
+}
+
+@media (max-width: 650px) {
+    .stats-chart-controls {
+        flex-wrap: wrap;
+    }
+
+    .stats-collection-select {
+        width: 100%;
+    }
 }

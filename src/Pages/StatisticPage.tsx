@@ -1,7 +1,6 @@
 //page for createing new pages
 
-import { useState, useEffect } from "react";
-import { Link } from 'react-router-dom';
+import { useState, useEffect, useMemo } from "react";
 import * as SunCalc from "suncalc";
 
 import SideNavBar from "../Components/SideNav"
@@ -11,17 +10,11 @@ import "../styles/Statistic.css"
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { 
-  faPlus, faCircleExclamation, faArrowRight, 
-  faSquareArrowUpRight, faTableList, faSun, faMoon,
-  faCalendarWeek, faList, faCircleCheck, faClock, faCalendarDays
+  faPlus, faTableList, faSun, faMoon, faCircleCheck,
  } from '@fortawesome/free-solid-svg-icons';
 
 import {
-  getTodaysDailyTasks,
-  getTodaysWeeklyTasks,
-  getOverdueTasks,
-  getUpcommingTasks,
-  getTodaysMonthlyTasks,
+  getAllTasksStats,
   addTask,
 
   type Task
@@ -35,189 +28,392 @@ import {
 
 import StatsPieChart from "../Components/PieChartDisplay";
 import StatsBarChart from '../Components/BarChartDisplay';
+import TaskHistory from "../Components/TaskHistory";
 
 
+//used to get a default date when loading the page
+const getLocalDate = (date: Date) => {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const day = String(date.getDate()).padStart(2, "0");
 
+    return `${year}-${month}-${day}`;
+};
 
+const getDefaultStartDate = () => {
+    const date = new Date();
+    date.setDate(date.getDate() - 6);
+    return getLocalDate(date);
+};
+
+//returns a persentage of the two numbers
+
+const getProgress = (completed: number, uncompleted: number) => {
+    const total = completed + uncompleted;
+
+    return total > 0
+        ? Math.round((completed / total) * 100)
+        : 0;
+};
   
 export default function StatisticPage() {
 
-  //date and time
-  const [currentTime, setCurrentTime] = useState(new Date());
+    // Date and time
+    const [currentTime, setCurrentTime] = useState(new Date());
 
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setCurrentTime(new Date());
-    }, 1000);
+    useEffect(() => {
+        const timer = setInterval(() => {
+            setCurrentTime(new Date());
+        }, 1000);
 
-    return () => clearInterval(timer);
-  }, []);
+        return () => clearInterval(timer);
+    }, []);
 
-  const today = currentTime.getFullYear() + "-" +
-    String(currentTime.getMonth() + 1).padStart(2, "0") + "-" +
-    String(currentTime.getDate()).padStart(2, "0");
+    const today = getLocalDate(currentTime);
 
-  // Bristol coordinates
-  const latitude = 51.4545;
-  const longitude = -2.5879;
+    // Sun information
+    const latitude = 51.4545;
+    const longitude = -2.5879;
 
-  const sun_times = SunCalc.getTimes(currentTime,latitude,longitude);
+    const sun_times = SunCalc.getTimes(currentTime, latitude, longitude);
+    const is_sun_up =
+        currentTime >= sun_times.sunrise &&
+        currentTime < sun_times.sunset;
 
-  const is_sun_up = currentTime >= sun_times.sunrise && currentTime < sun_times.sunset;
+    // Database data
+    const [workspaces, setWorkspaces] = useState<Workspace[]>([]);
+    const [selectedWorkspace, setSelectedWorkspace] = useState("all");
+    const [allTasks, setAllTasks] = useState<Task[]>([]);
 
-  const [workspaces, setWorkspaces] = useState<Workspace[]>([]);
-
-  useEffect(() => {
-    async function loadWorkspaces() {
-      try{
-        const collections = await getWorkspaces();
-        setWorkspaces(collections);
-      } catch(error){
-        console.error('failed to load workspaces:', error);
-      }
+    async function LoadAllTasks() {
+        try {
+            const all_tasks = await getAllTasksStats(selectedWorkspace);
+            setAllTasks(all_tasks);
+        } catch (error) {
+            console.error("Failed to load tasks:", error);
+        }
     }
 
-    loadWorkspaces();
-  }, []);
+    // Load workspaces and tasks when the page opens
+    useEffect(() => {
+        let cancelled = false;
 
-//   //loads daily and weekly tasks;
-//   const [dailyTasks, setDailyTasks] = useState<Task[]>([]);
-//   const [weeklyTasks, setWeeklyTasks] = useState<Task[]>([]);
-//   const [monthlyTasks, setMonthlyTasks] = useState<Task[]>([]);
-//   const [overdueTasks, setOverdueTasks] = useState<Task[]>([]);
-//   const [upcommingTasks, setUpcommingTasks] = useState<Task[]>([]);
+        async function loadData() {
+            const [workspaceResult, taskResult] = await Promise.allSettled([
+                getWorkspaces(),
+                getAllTasksStats(selectedWorkspace)
+            ]);
 
+            if (cancelled) return;
 
+            if (workspaceResult.status === "fulfilled") {
+                setWorkspaces(workspaceResult.value);
+            } else {
+                console.error("Failed to load workspaces:", workspaceResult.reason);
+            }
 
-//     async function loadDailyTasks() {
-//         try{
-//             const daily_tasks = await getTodaysDailyTasks();
-//             setDailyTasks(daily_tasks);
-//         } catch(error) {
-//             console.error('failed to load daily tasks:', error);
-//         }
-//     }
+            if (taskResult.status === "fulfilled") {
+                setAllTasks(taskResult.value);
+            } else {
+                console.error("Failed to load tasks:", taskResult.reason);
+            }
+        }
 
-//     async function loadWeeklyTasks() {
-//         try{
-//             const weekly_tasks = await getTodaysWeeklyTasks();
-//             setWeeklyTasks(weekly_tasks);
-//         } catch(error) {
-//             console.error('failed to load weekly tasks:', error);
-//         }
-//     }
+        loadData();
 
-//     async function loadMonthlyTask() {
-//         try{
-//             const monthly_tasks = await getTodaysMonthlyTasks();
-//             setMonthlyTasks(monthly_tasks);
-//         } catch(error) {
-//             console.error('failed to load weekly tasks:', error);
-//         }
-//     }
+        return () => {
+            cancelled = true;
+        };
+    }, []);
 
-//     async function loadOverdueTasks() {
-//         try{
-//             const overdue_tasks = await getOverdueTasks();
-//             setOverdueTasks(overdue_tasks);
-//         } catch(error) {
-//             console.error('failed to load overdue tasks:', error);
-//         }
-//     }
-
-//     async function loadUpcommingTasks() {
-//         try{
-//             const upcomming_tasks = await getUpcommingTasks();
-//             setUpcommingTasks(upcomming_tasks);
-//         } catch(error) {
-//             console.error('failed to load overdue tasks:', error);
-//         }
-//     }
-
-//     //for editing tasks
-//     const [editingTask, setEditingTask] = useState<Task | null>(null);
-
-//     useEffect(() => {
-//       loadDailyTasks();
-
-//       loadWeeklyTasks();
-
-//       loadMonthlyTask();
-
-//       loadOverdueTasks();
-
-//       loadUpcommingTasks();
-
-//     }, []);
-
-//   async function reloadTasks() {
-//     loadDailyTasks();
-
-//     loadWeeklyTasks();
-
-//     loadMonthlyTask();
-
-//     loadOverdueTasks();
-
-//     loadUpcommingTasks();
-
-//     setEditingTask(dailyTasks[0]);
-//   }
-
-
-    const completedTasks = 10;
-    const completedLate = 4;
-    const todoTasks = 5;
-    const overdueTasks = 2;
-
-    const dailyStats = [
-    { day: 'Mon', completed: 5, late: 1 },
-    { day: 'Tue', completed: 3, late: 2 },
-    { day: 'Wed', completed: 7, late: 0 },
-    { day: 'Thu', completed: 4, late: 1 },
-    { day: 'Fri', completed: 6, late: 2 },
-    { day: 'Sat', completed: 2, late: 0 },
-    { day: 'Sun', completed: 4, late: 1 }
-];
-
-  //tasks
-  const [title, setTitle] = useState("");
-  const [discription, setDiscription] = useState("");
-  const [taskType, setTaskType] = useState("daily");
-  const [dueDate, setDueDate] = useState(today);
-  const [workspaceId, setWorkspaceId] = useState<number | null>(null);
-
-  useEffect(() => {
-      if (workspaces.length > 0 && workspaceId === null) {
-          setWorkspaceId(workspaces[0].id);
-      }
-  }, [workspaces, workspaceId]);
-
-  async function AddTask(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault();
-
-    if (workspaceId === null) {
-        console.error("Please select a workspace.");
-        return;
+    async function reloadTasks() {
+        await LoadAllTasks();
     }
 
-    try {
-        await addTask(title, discription, workspaceId, taskType, dueDate);
+    // Task statistics
+    const taskStats = useMemo(() => {
 
-        // Reset form fields
-        setTitle("");
-        setDiscription("");
-        setTaskType("daily");
-        setDueDate(today);
+        const stats = {
+            daily: {
+                completed: 0,
+                uncompleted: 0,
+                completedOnTime: 0,
+                completedLate: 0
+            },
+            weekly: {
+                completed: 0,
+                uncompleted: 0,
+                completedOnTime: 0,
+                completedLate: 0
+            },
+            monthly: {
+                completed: 0,
+                uncompleted: 0,
+                completedOnTime: 0,
+                completedLate: 0
+            }
+        };
 
-    } catch (error) {
-        console.error("Failed to add task:", error);
+        const totals = {
+            completedOnTime: 0,
+            completedLate: 0,
+            overdue: 0,
+            toDo: 0
+        };
+
+        allTasks.forEach(task => {
+
+            const completedDate = task.completed_at?.slice(0, 10);
+
+            const completedOnTime =
+                task.status === "completed" &&
+                completedDate !== undefined &&
+                completedDate <= task.due_date;
+
+            const completedLate =
+                task.status === "completed" &&
+                completedDate !== undefined &&
+                completedDate > task.due_date;
+
+            // Overall statistics
+            if (completedOnTime) {
+                totals.completedOnTime++;
+            } else if (completedLate) {
+                totals.completedLate++;
+            } else if (task.status === "todo") {
+                if (today > task.due_date) {
+                    totals.overdue++;
+                } else {
+                    totals.toDo++;
+                }
+            }
+
+            // Task type statistics
+            const type = task.task_type;
+
+            if (type !== "daily" && type !== "weekly" && type !== "monthly") {
+                return;
+            }
+
+            if (task.status === "completed") {
+                stats[type].completed++;
+
+                if (completedOnTime) {
+                    stats[type].completedOnTime++;
+                } else if (completedLate) {
+                    stats[type].completedLate++;
+                }
+            } else if (task.status === "todo") {
+                stats[type].uncompleted++;
+            }
+        });
+
+        return { ...stats, totals };
+
+    }, [allTasks, today]);
+
+    
+
+    // Daily
+    const dailyCompleted = taskStats.daily.completed;
+    const dailyUncompleted = taskStats.daily.uncompleted;
+    const dailyProgress = getProgress(dailyCompleted, dailyUncompleted);
+
+    // Weekly
+    const weeklyCompleted = taskStats.weekly.completed;
+    const weeklyUncompleted = taskStats.weekly.uncompleted;
+    const weeklyProgress = getProgress(weeklyCompleted, weeklyUncompleted);
+
+    // Monthly
+    const monthlyCompleted = taskStats.monthly.completed;
+    const monthlyUncompleted = taskStats.monthly.uncompleted;
+    const monthlyProgress = getProgress(monthlyCompleted, monthlyUncompleted);
+
+    // Overall statistics
+    const totalCompletedOnTime = taskStats.totals.completedOnTime;
+    const totalCompletedLate = taskStats.totals.completedLate;
+    const totalOverdue = taskStats.totals.overdue;
+    const totalToDo = taskStats.totals.toDo;
+
+    const totalTaskLength =
+        totalCompletedOnTime +
+        totalCompletedLate +
+        totalOverdue +
+        totalToDo;
+
+    const totalCompleted = totalCompletedOnTime + totalCompletedLate;
+
+    const totalCompletedOnTimeProgress = getProgress(
+        totalCompletedOnTime,
+        totalCompletedLate
+    );
+
+    const totalCompletedLateProgress = getProgress(
+        totalCompletedLate,
+        totalCompletedOnTime
+    );
+
+    const totalCompletedProgress = getProgress(
+        totalCompleted,
+        totalOverdue + totalToDo
+    );
+
+    // Chart date range
+    const [startDate, setStartDate] = useState(getDefaultStartDate);
+    const [endDate, setEndDate] = useState(() => getLocalDate(new Date()));
+
+    const filteredTaskStats = useMemo(() => {
+    const totals = {
+        completedOnTime: 0,
+        completedLate: 0,
+        overdue: 0,
+        toDo: 0
+    };
+
+    allTasks.forEach(task => {
+        const completedDate = task.completed_at?.slice(0, 10);
+
+        // Only include tasks within the selected date range
+        if (task.status === "completed") {
+            if (!completedDate || completedDate < startDate || completedDate > endDate) {
+                return;
+            }
+
+            if (completedDate <= task.due_date) {
+                totals.completedOnTime++;
+            } else {
+                totals.completedLate++;
+            }
+        } else if (task.status === "todo") {
+            // Use the due date for outstanding tasks
+            if (task.due_date < startDate || task.due_date > endDate) {
+                return;
+            }
+
+            if (task.due_date < today) {
+                totals.overdue++;
+            } else {
+                totals.toDo++;
+            }
+        }
+    });
+
+    return totals;
+    }, [allTasks, startDate, endDate, today]);
+
+    const dailyStats = useMemo(() => {
+
+        const stats: {
+            date: string;
+            day: string;
+            completed: number;
+            late: number;
+        }[] = [];
+
+        if (!startDate || !endDate || startDate > endDate) {
+            return [];
+        }
+
+        // Generate dates for the selected range
+        const currentDate = new Date(`${startDate}T00:00:00`);
+        const lastDate = new Date(`${endDate}T00:00:00`);
+
+        while (currentDate <= lastDate) {
+            const dateKey = getLocalDate(currentDate);
+
+            stats.push({
+                date: dateKey,
+                day: currentDate.toLocaleDateString("en-GB", {
+                    day: "2-digit",
+                    month: "short"
+                }),
+                completed: 0,
+                late: 0
+            });
+
+            currentDate.setDate(currentDate.getDate() + 1);
+        }
+
+        // Create a lookup for each date
+        const statsByDate = new Map(
+            stats.map(day => [day.date, day])
+        );
+
+        // Count completed task occurrences
+        allTasks.forEach(task => {
+
+            if (task.status !== "completed" || !task.completed_at) {
+                return;
+            }
+
+            const completedDate = task.completed_at.slice(0, 10);
+
+            if (completedDate < startDate || completedDate > endDate) {
+                return;
+            }
+
+            const dayStats = statsByDate.get(completedDate);
+
+            if (!dayStats) return;
+
+            if (completedDate <= task.due_date) {
+                dayStats.completed++;
+            } else {
+                dayStats.late++;
+            }
+        });
+
+        return stats.map(({ day, completed, late }) => ({
+            day,
+            completed,
+            late
+        }));
+
+    }, [allTasks, startDate, endDate]);
+
+    // Add task form
+    const [title, setTitle] = useState("");
+    const [discription, setDiscription] = useState("");
+    const [taskType, setTaskType] = useState("daily");
+    const [dueDate, setDueDate] = useState(today);
+    const [workspaceId, setWorkspaceId] = useState<number | null>(null);
+
+    // Set default workspace
+    useEffect(() => {
+        if (workspaces.length > 0 && workspaceId === null) {
+            setWorkspaceId(workspaces[0].id);
+        }
+    }, [workspaces, workspaceId]);
+
+    // Add task
+    async function AddTask(e: React.FormEvent<HTMLFormElement>) {
+        e.preventDefault();
+
+        if (workspaceId === null) {
+            console.error("Please select a workspace.");
+            return;
+        }
+
+        try {
+            await addTask(title, discription, workspaceId, taskType, dueDate);
+
+            // Reset form
+            setTitle("");
+            setDiscription("");
+            setTaskType("daily");
+            setDueDate(today);
+
+            // Reload database tasks
+            await reloadTasks();
+
+        } catch (error) {
+            console.error("Failed to add task:", error);
+        }
     }
 
-    //reloadTasks()
-  }
-
-
+    useEffect(() => {
+        LoadAllTasks();
+    }, [selectedWorkspace]);
 
   
 
@@ -230,7 +426,7 @@ export default function StatisticPage() {
             <div className="workspace-current">
             <FontAwesomeIcon icon={faTableList} />
             <span className="workspace-separator">|</span>
-            <span>Template</span>
+            <span>Statistics</span>
             </div>
 
             <div className="workspace-actions">
@@ -264,7 +460,9 @@ export default function StatisticPage() {
             </div>
             </div>
 
+                
             <div className="today-overview">
+                
 
               <div className="overview-slot">
                 <div className="overview-title-slot">
@@ -275,9 +473,9 @@ export default function StatisticPage() {
                 <div className="overview-info">
                     <p className="today-tasks-overview-num" style={{margin: "0"}}>
                         <div className="tasks-compleation-progress-overview">
-                            <p>50%</p>
+                            <p>{totalCompletedProgress}%</p>
                         <p className="tasks-compleation-progress-overview-text">
-                            {2} of {4} tasks
+                            {totalCompletedLate + totalCompletedOnTime} of {totalTaskLength} tasks
                         </p>
                         </div>
                     </p>                    
@@ -285,7 +483,7 @@ export default function StatisticPage() {
                 <div className="overview-progress-bar">
                     <div
                         className="overview-progress-fill"
-                        style={{ width: `${50}%` }}
+                        style={{ width: `${totalCompletedProgress}%` }}
                     />
                 </div>
               </div>
@@ -299,9 +497,9 @@ export default function StatisticPage() {
                 <div className="overview-info">
                      <p className="today-tasks-overview-num" style={{margin: "0"}}>
                         <div className="tasks-compleation-progress-overview">
-                            <p>20</p>
+                            <p>{totalCompletedOnTime}</p>
                         <p className="tasks-compleation-time-overview-text">
-                            {83}% of compleated
+                            {totalCompletedOnTimeProgress}% of compleated
                         </p>
                         </div>
                     </p>
@@ -318,9 +516,9 @@ export default function StatisticPage() {
                 <div className="overview-info">
                     <p className="today-tasks-overview-num" style={{margin: "0"}}>
                         <div className="tasks-compleation-progress-overview">
-                            <p>4</p>
+                            <p>{totalCompletedLate}</p>
                         <p className="tasks-compleation-late-overview-text">
-                            {17}% of compleated
+                            {totalCompletedLateProgress}% of compleated
                         </p>
                         </div>
                     </p>
@@ -331,6 +529,50 @@ export default function StatisticPage() {
             </div>
 
             
+            <div className="stats-chart-controls">
+                <div className="stats-date-range">
+                    <div className="stats-date-input">
+                        <label htmlFor="start-date">Start Date</label>
+                        <input
+                            type="date"
+                            id="start-date"
+                            value={startDate}
+                            max={endDate}
+                            onChange={e => setStartDate(e.target.value)}
+                        />
+                    </div>
+
+                    <span className="stats-date-separator">to</span>
+
+                    <div className="stats-date-input">
+                        <label htmlFor="end-date">End Date</label>
+                        <input
+                            type="date"
+                            id="end-date"
+                            value={endDate}
+                            min={startDate}
+                            onChange={e => setEndDate(e.target.value)}
+                        />
+                    </div>
+                </div>
+
+                <div className="stats-collection-select">
+                    <label htmlFor="collection-select">Collection</label>
+                    <select
+                        id="collection-select"
+                        value={selectedWorkspace}
+                        onChange={e => setSelectedWorkspace(e.target.value)}
+                    >
+                        <option value="all">All Collections</option>
+                        {workspaces.map(workspace => (
+                            <option key={workspace.id} value={String(workspace.id)}>
+                                {workspace.name}
+                            </option>
+                        ))}
+                    </select>
+                </div>
+            </div>
+
             {/* box for holding the displays of data */}
             <div className="stats-data-display-slot">
 
@@ -343,6 +585,8 @@ export default function StatisticPage() {
                         <h2>Task Compleation History</h2>
                         <p>Here is your task history</p>
                     </div>
+
+                    
 
                     <div className="bar-graph-legend-key">
                         <div className="bar-graph-legend-key-box" style={{ "--legend-color": "#8B91FF" } as React.CSSProperties}>
@@ -357,10 +601,15 @@ export default function StatisticPage() {
 
                     </div>
 
+                    
+
                     <div className="stats-graph-display-box">
                         <StatsBarChart data={dailyStats} />
                     </div>
+
+                    
                 </div>
+                
 
                 {/* Slot for displaying pie chart */}
                 <div className="stats-pie-chart-slot">
@@ -370,10 +619,10 @@ export default function StatisticPage() {
                     </div>
                     <div className="stats-pie-chart-box">
                         <StatsPieChart
-                            completed={completedTasks}
-                            late={completedLate}
-                            todo={todoTasks}
-                            overdue={overdueTasks}
+                            completed={filteredTaskStats.completedOnTime}
+                            late={filteredTaskStats.completedLate}
+                            todo={filteredTaskStats.toDo}
+                            overdue={filteredTaskStats.overdue}
                         />
                         <div className="pie-chart-legend-slot">
 
@@ -382,7 +631,7 @@ export default function StatisticPage() {
                                     <p>Completed on Time</p>
                                 </div>
                                 <div className="pie-chart-legend-number">
-                                    <p>{completedTasks}</p>
+                                    <p>{filteredTaskStats.completedOnTime}</p>
                                 </div>
                             </div>
 
@@ -391,7 +640,7 @@ export default function StatisticPage() {
                                     <p>Completed Late</p>
                                 </div>
                                 <div className="pie-chart-legend-number">
-                                    <p>{completedLate}</p>
+                                    <p>{filteredTaskStats.completedLate}</p>
                                 </div>
                             </div>
 
@@ -400,7 +649,7 @@ export default function StatisticPage() {
                                     <p>Overdue</p>
                                 </div>
                                 <div className="pie-chart-legend-number">
-                                    <p>{overdueTasks}</p>
+                                    <p>{filteredTaskStats.overdue}</p>
                                 </div>
                             </div>
 
@@ -409,7 +658,7 @@ export default function StatisticPage() {
                                     <p>To Do</p>
                                 </div>
                                 <div className="pie-chart-legend-number">
-                                    <p>{todoTasks}</p>
+                                    <p>{filteredTaskStats.toDo}</p>
                                 </div>
                             </div>
                         </div>
@@ -426,15 +675,15 @@ export default function StatisticPage() {
                     <div className="task-type-progress-title-slot">
                         <h2><FontAwesomeIcon style={{color: "#8B91FF"}} icon={faCircleCheck} /> Daily</h2>
                         <div className="task-type-progress-title-percentage">
-                            <p>{18}/{21}</p>
-                            <h2>86%</h2>
+                            <p>{dailyCompleted}/{dailyUncompleted + dailyCompleted}</p>
+                            <h2>{dailyProgress}%</h2>
                         </div>
                     </div>
                     
                     <div className="overview-progress-bar">
                         <div
                             className="overview-progress-fill"
-                            style={{ width: `${50}%` }}
+                            style={{ width: `${dailyProgress}%` }}
                         />
                     </div>
                 </div>
@@ -443,15 +692,15 @@ export default function StatisticPage() {
                     <div className="task-type-progress-title-slot">
                         <h2><FontAwesomeIcon style={{color: "#8B91FF"}} icon={faCircleCheck} /> Weekly</h2>
                         <div className="task-type-progress-title-percentage">
-                            <p>{18}/{21}</p>
-                            <h2>86%</h2>
+                            <p>{weeklyCompleted}/{weeklyUncompleted + weeklyCompleted}</p>
+                            <h2>{weeklyProgress}%</h2>
                         </div>
                     </div>
                     
                     <div className="overview-progress-bar">
                         <div
                             className="overview-progress-fill"
-                            style={{ width: `${50}%` }}
+                            style={{ width: `${weeklyProgress}%` }}
                         />
                     </div>
                 </div>
@@ -460,35 +709,30 @@ export default function StatisticPage() {
                     <div className="task-type-progress-title-slot">
                         <h2><FontAwesomeIcon style={{color: "#8B91FF"}} icon={faCircleCheck} /> Monthly</h2>
                         <div className="task-type-progress-title-percentage">
-                            <p>{18}/{21}</p>
-                            <h2>86%</h2>
+                            <p>{monthlyCompleted}/{monthlyUncompleted + monthlyCompleted}</p>
+                            <h2>{monthlyProgress}%</h2>
                         </div>
                     </div>
                     
                     <div className="overview-progress-bar">
                         <div
                             className="overview-progress-fill"
-                            style={{ width: `${50}%` }}
+                            style={{ width: `${monthlyProgress}%` }}
                         />
                     </div>
                 </div>
 
             </div>
 
-            {/* display for tasks complated ordered by due date first */}
+            {/* Display completed tasks ordered by due date */}
             <div className="task-compleation-history-slot">
+
                 <div className="task-compleation-title">
-                    <h2>Task Compleation History</h2>
+                    <h2>Task Completion History</h2>
                     <p>Here is your task history</p>
                 </div>
 
-                <div className="task-compleation-table-top">
-                    <p>Task</p>
-                    <p>Type</p>
-                    <p>Due Date</p>
-                    <p>Completion Date</p>
-                    <p>Timing Status</p>
-                </div>
+                <TaskHistory allTasks={allTasks} />
                 
             </div>
             

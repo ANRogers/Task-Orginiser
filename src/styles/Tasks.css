@@ -443,6 +443,7 @@
     color: #8B91FF;
     font-size: 16px;
     cursor: pointer;
+    text-decoration: none;
 }
 
 /* Schedule task dialog */

@@ -65,10 +65,24 @@
 
 .collection-option-box {
     display: flex;
-    flex-direction: row;
     align-items: center;
+    justify-content: space-between;
+    width: 100%;
     gap: 12px;
     margin-top: 18px;
+}
+
+.collection-option-box {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+}
+
+.collection-option-info {
+    display: flex;
+    align-items: center;
+    gap: 10px;
 }
 
 .collection-option-colour {

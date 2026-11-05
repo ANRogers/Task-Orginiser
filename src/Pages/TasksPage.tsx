@@ -8,8 +8,8 @@ import "../styles/WorkSpaceBar.css"
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { 
   faPlus, faCalendarDays, faBoxArchive, 
-  faSquareArrowUpRight, faTableList, faSun, faMoon,
-  faCalendarWeek, faList, faCircleCheck, faClock
+  faMagnifyingGlass, faTableList, faSun, faMoon,
+  faCalendarWeek,
  } from '@fortawesome/free-solid-svg-icons';
 
 import {
@@ -145,6 +145,32 @@ export default function TaskPage() {
 
 
   //filters the tasks based on the buttons
+    const [searchQuery, setSearchQuery] = useState("");
+  
+    function searchTasks(tasks: DisplayTask[]): DisplayTask[] {
+      const query = searchQuery.toLowerCase().trim();
+  
+      if (!query) return tasks;
+  
+      return tasks.filter(task =>
+          task.title.toLowerCase().includes(query) ||
+          task.description?.toLowerCase().includes(query)
+      );
+    }
+
+    const [selectedWorkspaceFilter, setSelectedWorkspaceFilter] = useState("all");
+    function filterTasksByWorkspace(tasks: DisplayTask[]): DisplayTask[] {
+          if (selectedWorkspaceFilter === "all") return tasks;
+    
+          return tasks.filter(task =>
+              task.workspace_id === Number(selectedWorkspaceFilter)
+          );
+      }
+  
+    const filteredDailySearchTasks = filterTasksByWorkspace(searchTasks(dailyTasks));
+    const filteredWeeklySearchTasks = filterTasksByWorkspace(searchTasks(weeklyTasks));
+    const filteredMonthlySearchTasks = filterTasksByWorkspace(searchTasks(monthlyTask));
+
   const [taskFilter, setTaskFilter] = useState("all");
 
     // Filters tasks based on the selected button
@@ -171,8 +197,9 @@ export default function TaskPage() {
         }
     }
 
-const filteredTasks = assignFilteredTasks();
+  const filteredTasksNoSearch = assignFilteredTasks();
   
+  const filteredTasks = filterTasksByWorkspace(searchTasks(filteredTasksNoSearch));
 
   //tasks
   const [title, setTitle] = useState("");
@@ -270,6 +297,7 @@ const filteredTasks = assignFilteredTasks();
   }
 
   
+  
    
 
 
@@ -293,6 +321,30 @@ const filteredTasks = assignFilteredTasks();
                 <span>Tasks</span>
             </div>
             <div className="workspace-actions">
+              <div className="search-bar-container">
+                  <FontAwesomeIcon icon={faMagnifyingGlass} className="search-icon" />
+
+                  <input
+                      className="search-bar-tasks"
+                      type="text"
+                      placeholder="Search your tasks"
+                      value={searchQuery}
+                      onChange={e => setSearchQuery(e.target.value)}
+                  />
+              </div>
+              <select
+                  className="workspace-filter-select"
+                  value={selectedWorkspaceFilter}
+                  onChange={e => setSelectedWorkspaceFilter(e.target.value)}
+              >
+                  <option value="all">All Collections</option>
+
+                  {workspaces.map(workspace => (
+                      <option key={workspace.id} value={String(workspace.id)}>
+                          {workspace.name}
+                      </option>
+                  ))}
+              </select>
               <button data-bs-toggle="dialog" data-bs-target="#AddTaskOverlay" data-bs-backdrop="static" className="topbar-newtask">
                 <FontAwesomeIcon icon={faPlus} /> New Task
               </button>
@@ -357,8 +409,8 @@ const filteredTasks = assignFilteredTasks();
                     <p>Here is todays tasks!</p>
                   </div>
                   
-                  {dailyTasks.length != 0 ? (
-                    <DisplayTasks tasks={dailyTasks} reloadTasks={reloadTasks} onEditTask={openEditTask} />
+                  {filteredDailySearchTasks.length != 0 ? (
+                    <DisplayTasks tasks={filteredDailySearchTasks} reloadTasks={reloadTasks} onEditTask={openEditTask} />
                   ): (
                     
                     <p className="no-tasks-text">No tasks found here. Try adding a new task or selecting a different filter.</p>
@@ -373,8 +425,8 @@ const filteredTasks = assignFilteredTasks();
                     <p>Here is your weekly tasks!</p>
                   </div>
 
-                  {weeklyTasks.length != 0 ? (
-                    <DisplayTasks tasks={weeklyTasks} reloadTasks={reloadTasks} onEditTask={openEditTask}/>
+                  {filteredWeeklySearchTasks.length != 0 ? (
+                    <DisplayTasks tasks={filteredWeeklySearchTasks} reloadTasks={reloadTasks} onEditTask={openEditTask}/>
                   ): (
                     
                     <p className="no-tasks-text">No tasks found here. Try adding a new task or selecting a different filter.</p>
@@ -388,8 +440,8 @@ const filteredTasks = assignFilteredTasks();
                     <p>Here is your monthly tasks!</p>
                   </div>
 
-                  {monthlyTask.length != 0 ? (
-                    <DisplayTasks tasks={monthlyTask} reloadTasks={reloadTasks} onEditTask={openEditTask}/>
+                  {filteredMonthlySearchTasks.length != 0 ? (
+                    <DisplayTasks tasks={filteredMonthlySearchTasks} reloadTasks={reloadTasks} onEditTask={openEditTask}/>
                   ): (
                     
                     <p className="no-tasks-text">No tasks found here. Try adding a new task or selecting a different filter.</p>
