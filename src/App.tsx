@@ -9,6 +9,7 @@ import { generateOccurrences } from './recurrence';
 import HomePage from './Pages/HomePage';
 import TasksPage from './Pages/TasksPage';
 import CalendarPage from './Pages/CalendarPage';
+import StatisticPage from './Pages/StatisticPage';
 
 import TemplatePage from './Pages/TemplatePage';
 
@@ -54,6 +55,7 @@ function App() {
                     <Route path="/tasks" element={<TasksPage />} />
                     <Route path="/calendar" element={<CalendarPage />} />
                     <Route path="/temp" element={<TemplatePage />} />
+                    <Route path="/statistic" element={<StatisticPage/>} />
                 </Routes>
             </main>
         </BrowserRouter>

@@ -1,0 +1,235 @@
+/* data display overviews */
+.tasks-compleation-progress-overview{
+    display: flex;
+    gap: 14px;
+    align-items: baseline;
+
+}
+
+.tasks-compleation-progress-overview p{
+   margin: 0;
+
+}
+.tasks-compleation-progress-overview-text{
+    font-size: 11px;
+    color: #8B91FF;
+}
+
+.tasks-compleation-time-overview-text{
+    font-size: 11px;
+    color: #6BCF97;
+}
+
+.tasks-compleation-late-overview-text{
+    font-size: 11px;
+    color: #F2B86A;
+}
+
+
+
+/* task data display */
+.stats-data-display-slot{
+    display: flex;
+    width: 100%;
+    gap: 24px;
+    padding-bottom: 28px;
+}
+
+
+
+.stats-data-display-title h2{
+    font-size: 18px;
+    font-weight: 700px;
+}
+
+.stats-data-display-title p{
+    font-size: 12px;
+    color: #AAB2C0;
+}
+
+/* bar graph */
+.stats-graph-display-slot{
+    flex: 2;
+    background-color: #1A1F2A;
+    border-radius: 16px;
+    border: 1px solid #2A313B;
+    padding: 20px;
+}
+
+.bar-graph-legend-key-slot{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.bar-graph-legend-key{
+    display: flex;
+    gap: 10px;
+}
+
+.bar-graph-legend-key-box{
+    font-size: 11px;
+    color: #AAB2C0;
+    display: flex;
+    align-items: center;
+}
+
+.bar-graph-legend-key-box::before {
+    content: '';
+    display: inline-block;
+    background: var(--legend-color, #7F8797);
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    vertical-align: middle;
+    margin-right: 6px;
+}
+
+.stats-bar-chart {
+    width: 100%;
+    height: 128px;
+    min-width: 0;
+}
+
+/* Pie chart */
+.stats-pie-chart-slot {
+    flex: 1;
+    background-color: #1A1F2A;
+    border-radius: 16px;
+    border: 1px solid #2A313B;
+    padding: 20px;
+    min-width: 0;
+}
+
+.stats-pie-chart-box {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    gap: 20px;
+}
+
+.stats-pie-chart {
+    width: 35%;
+    max-width: 128px;
+    height: 128px;
+    flex: 0 0 35%;
+    min-width: 0;
+}
+
+.pie-chart-legend-slot {
+    flex: 1;
+    min-width: 0;
+}
+
+.pie-chart-legend-box {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+}
+
+.pie-chart-legend-box p{
+    margin: 0;
+}
+
+.pie-chart-legend-text {
+    font-size: 11px;
+    color: #AAB2C0;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.pie-chart-legend-text::before {
+    content: '';
+    display: inline-block;
+    background: var(--legend-color, #7F8797);
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    vertical-align: middle;
+    margin-right: 6px;
+}
+
+
+
+
+.pie-chart-legend-number{
+    font-weight: 700;
+}
+
+/* task progress by type */
+.progress-tasks-type-display-slot{
+    display: flex;
+    width: 100%;
+    gap: 16px;
+    padding-bottom: 28px;
+}
+
+/* progress task box */
+.progress-task-type-box{
+    flex: 1;
+    background-color: #1A1F2A;
+    border-radius: 16px;
+    border: 1px solid #2A313B;
+    padding: 20px;
+}
+
+.task-type-progress-title-slot{
+    display: flex;
+    justify-content: space-between;
+}
+
+.task-type-progress-title-slot h2{
+    font-size: 13px;
+}
+
+.task-type-progress-title-percentage{
+    display: flex;
+    gap: 4px;
+    align-items: baseline;
+}
+
+.task-type-progress-title-percentage p{
+    color: #AAB2C0;
+    font-size: 12px;
+}
+
+.task-type-progress-title-percentage h2{
+    font-size: 16px;
+}
+
+/* task compleation history */
+.task-compleation-history-slot{
+    background-color: #1A1F2A;
+    border-radius: 16px;
+    border: 1px solid #2A313B;
+}
+
+.task-compleation-title{
+    padding: 20px;
+}
+
+.task-compleation-title h2{
+    font-size: 18px;
+    font-weight: 700px;
+}
+
+.task-compleation-title p{
+    font-size: 12px;
+    color: #AAB2C0;
+}
+
+.task-compleation-table-top{
+    padding: 5px 20px;
+    border: 1px solid #2A313B;
+    background-color: #1B212A;
+    display: flex;
+    justify-content: space-between;
+}
+
+.task-compleation-table-top p{
+    margin: 0;
+    font-size: 12px;
+    color: #AAB2C0;
+}

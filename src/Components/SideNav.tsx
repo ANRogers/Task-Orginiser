@@ -60,7 +60,7 @@ export default function SideNavBar() {
                 <FontAwesomeIcon icon={faCalendarDays} /> Calander
             </div>
             </Link>
-            <Link to="/temp" className="workspace-nav-link">
+            <Link to="/statistic" className="workspace-nav-link">
             <div className="worspace-nav-option">
                 <FontAwesomeIcon icon={faClipboardList} /> Stastistics
             </div>
