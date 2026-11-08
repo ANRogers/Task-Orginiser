@@ -58,6 +58,8 @@ export default function CalendarPage() {
   );
 
   const is_sun_up =
+    sun_times.sunrise != null &&
+    sun_times.sunset != null &&
     currentTime >= sun_times.sunrise &&
     currentTime < sun_times.sunset;
 

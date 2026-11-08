@@ -1,10 +1,8 @@
 import {
     PieChart,
     Pie,
-    Cell,
-    Tooltip,
     ResponsiveContainer,
-    Legend
+    
 } from 'recharts';
 
 import "../styles/Statistic.css"

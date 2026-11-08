@@ -3,7 +3,6 @@ import { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faEllipsisVertical,
-  faRepeat,
   faPlus,
   faCalendarCheck,
   faCalendarDays,
@@ -16,8 +15,6 @@ import "../styles/Tasks.css";
 import {
   archiveTask,
   scheduleTask,
-  addRepeat,
-  removeRepeat,
   type DisplayTask,
 } from "../services/TaskService";
 

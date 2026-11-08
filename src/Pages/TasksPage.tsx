@@ -57,7 +57,11 @@ export default function TaskPage() {
 
   const sun_times = SunCalc.getTimes(currentTime,latitude,longitude);
 
-  const is_sun_up = currentTime >= sun_times.sunrise && currentTime < sun_times.sunset;
+  const is_sun_up =
+    sun_times.sunrise != null &&
+    sun_times.sunset != null &&
+    currentTime >= sun_times.sunrise &&
+    currentTime < sun_times.sunset;
 
   const [workspaces, setWorkspaces] = useState<Workspace[]>([]);
 

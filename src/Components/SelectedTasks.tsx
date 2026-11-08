@@ -7,7 +7,7 @@ import {
 import '../styles/Tasks.css'
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faEllipsisVertical, faPlus } from '@fortawesome/free-solid-svg-icons';
+import { faEllipsisVertical} from '@fortawesome/free-solid-svg-icons';
 
 export default function SelectedTasks({    tasks,
     reloadTasks,

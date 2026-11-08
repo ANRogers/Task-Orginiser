@@ -91,4 +91,10 @@ CREATE INDEX IF NOT EXISTS idx_occurrences_status_due
 CREATE INDEX IF NOT EXISTS idx_occurrences_task
     ON task_occurrences(task_id);
   `);
+
+  // Create default workspace if it doesn't exist
+    await database.execute(`
+        INSERT OR IGNORE INTO workspaces (id, name, colour)
+        VALUES (1, 'Personal', '#8B5CF6');
+    `);
 }
