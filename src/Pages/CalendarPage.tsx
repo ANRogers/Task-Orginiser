@@ -258,8 +258,8 @@ function openEditTask(task: Task) {
 
           <div className="dash-title">
             <div className="dash-title-left">
-              <h2>A little focus goes a long way.</h2>
-              <p>Good morning, Alex. Here’s what’s on your plate today.</p>
+              <h2>Make space for what’s next.</h2>
+              <p>Your routines, deadlines, and plans — all in one place.</p>
             </div>
 
             <div className="dash-title-right">

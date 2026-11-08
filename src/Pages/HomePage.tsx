@@ -444,7 +444,7 @@ export default function HomePage() {
           <div className="dash-title">
             <div className="dash-title-left">
               <h2>A little focus goes a long way.</h2>
-              <p>Good morning, Alex. Here’s what’s on your plate today.</p>
+              <p>Good morning. Here’s what’s on your plate today.</p>
             </div>
             <div className="dash-title-right">
               <div className="dash-date-box">

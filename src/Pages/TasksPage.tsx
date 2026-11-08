@@ -358,8 +358,8 @@ export default function TaskPage() {
         <div className="dashboard">
           <div className="dash-title">
             <div className="dash-title-left">
-              <h2>A little focus goes a long way.</h2>
-              <p>Good morning, Alex. Here’s what’s on your plate today.</p>
+              <h2>Your tasks, all in one place.</h2>
+              <p>Manage your workload and keep track of what's coming up.</p>
             </div>
             <div className="dash-title-right">
               <div className="dash-date-box">

@@ -470,8 +470,8 @@ export default function StatisticPage() {
         <div className="dashboard-stats">
             <div className="dash-title">
             <div className="dash-title-left">
-                <h2>A little focus goes a long way.</h2>
-                <p>Good morning, Alex. Here’s what’s on your plate today.</p>
+                <h2>Small steps. Measurable progress.</h2>
+                <p>Here’s how your tasks are adding up.</p>
             </div>
 
             <div className="dash-title-right">
