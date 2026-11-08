@@ -111,22 +111,42 @@ body,
 .overview-info {
     display: flex;
     gap: 8px;
+    align-items: center;
 }
 .today-tasks-overview-num{
-  font-size: 25px;
+  font-size: 23px;
   padding-right: 10px;
+  margin: 0;
   
 }
 
+.today-tasks-overview-num p{
+    margin: 0;
+}
+
 .today-tasks-overview-box{
-  display: flex;
+  
+    display: flex;
+    
+    color: #AAB2C0;
+}
+
+.today-tasks-overview-box p {
+    margin: 0;
 }
 .today-daily-tasks-overview-num{
   padding: 6px 6px 0px 0px;
+  margin: 0;
+  text-align: center;
 }
 
 .today-weekly-tasks-overview-num{
   padding: 6px 0px 0px 6px;
+}
+
+.today-daily-tasks-overview-num:not(:last-child)::after {
+    content: "•";
+    margin-left: 10px;
 }
 
 .overview-progress-bar {
@@ -221,17 +241,22 @@ body,
     margin-bottom: 22px;
     border: none;
     background: none;
+    color: #AAB2C0;
 }
 
 .tasks-option-box:hover {
     background-color: #1B2140;
-    
+    color: white;
 }
 
 .tasks-option-box:active{
-  background-color: #a6acb3;
-  color: #000414;
+  background-color: #1B2140;
+  color: white;
   
+}
+.tasks-option-box.active {
+    background-color: #1B2140;
+    color: white;
 }
 
 

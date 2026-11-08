@@ -87,7 +87,7 @@ export default function MonthlyTasks({    tasks,
                             }}
                             >
                             <FontAwesomeIcon icon={faRepeat} />
-                            Weekly
+                            Monthly
                             </button>
                         )
                         )}

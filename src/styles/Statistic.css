@@ -1,3 +1,46 @@
+/* dash scrollable */
+.dashboard-stats {
+    display: flex;
+    flex-direction: column;
+    flex: 1 1 0;
+    min-width: 0;
+    min-height: 0;
+    padding: 40px;
+    
+    overflow-y: auto;
+    overflow-x: hidden;
+    gap: 0;
+}
+
+.workspace-info{
+    flex-shrink: 0;
+}
+
+.dash-title,
+.today-overview,
+.stats-chart-controls,
+.stats-data-display-slot,
+.progress-tasks-type-display-slot,
+.task-compleation-history-slot{
+    flex-shrink: 0;
+}
+
+.dashboard-stats::-webkit-scrollbar{
+    width: 6px;
+}
+
+.dashboard-stats::-webkit-scrollbar-track{
+    background: #000414;
+}
+
+.dashboard-stats::-webkit-scrollbar-thumb{
+    background: #3a4150;
+    border-radius: 6px;
+}
+
+.dashboard-stats::-webkit-scrollbar-thumb:hover{
+    background: #8B5CF6;
+}
 /* data display overviews */
 .tasks-compleation-progress-overview{
     display: flex;
@@ -45,6 +88,7 @@
 .stats-data-display-title p{
     font-size: 12px;
     color: #AAB2C0;
+    margin: 0;
 }
 
 /* bar graph */
@@ -225,15 +269,16 @@
 .task-compleation-title p {
     font-size: 12px;
     color: #AAB2C0;
+    margin: 0;
 }
 
 /* Grid container */
 .task-compleation-grid {
     display: flex;
     flex-direction: column;
-    flex: 1;
-    min-height: 0;
-    overflow-y: auto;
+    flex: 0 0 auto;
+    /* min-height: 0; */
+    overflow: visible;
 }
 
 /* Grid rows */
@@ -361,12 +406,53 @@
     cursor: pointer;
 }
 
-@media (max-width: 650px) {
-    .stats-chart-controls {
-        flex-wrap: wrap;
+.task-history-bottom-bar{
+    padding: 14px 22px;
+    display: flex;
+    justify-content: space-between;
+}
+
+.task-history-bottom-bar p{
+    margin: 0;
+    color: #AAB2C0;
+}
+
+.task-history-pages-control{
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.task-history-pages-control-buttons-slot{
+    display: flex;
+    
+}
+
+.task-history-pages-control-button{
+    border: none;
+    background: none;
+}
+
+.task-history-pages-control-button:hover{
+    background-color: #1B2140;
+}
+
+
+.pie-chart-inner-text{
+    font-size: 26px;
+}
+
+.pie-chart-inner-text-complete{
+    font-size: 10px;
+}
+@media (max-width: 1095px) {
+    .pie-chart-inner-text{
+        font-size: 18px;
     }
 
-    .stats-collection-select {
-        width: 100%;
+    .pie-chart-inner-text-complete{
+        font-size: 8px;
     }
+
 }
+

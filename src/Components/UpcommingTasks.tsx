@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom';
 import {
     setTaskCompleted,
     deleteOccurrence,
@@ -98,7 +99,7 @@ export default function UpcommingTasks({    tasks,
 
             <div className="see-calander-box">
             
-            <button className="see-calander-button">See your calendar <FontAwesomeIcon icon={faArrowRight} /></button>
+            <Link to="/calendar" className="see-calander-button">See your calendar <FontAwesomeIcon icon={faArrowRight}/></Link>
         
             </div>
             

@@ -338,7 +338,7 @@ export default function HomePage() {
   // todays tasks
   const total_daily_tasks_num = dailyTasks.length;
   const total_weekly_tasks_num = weeklyTasks.length;
-  const total_monthly_tasks_num = 0;
+  const total_monthly_tasks_num = monthlyTasks.length;
   const total_num_tasks = total_daily_tasks_num + total_weekly_tasks_num + total_monthly_tasks_num;
 
   //overdue tasks
@@ -349,7 +349,7 @@ export default function HomePage() {
 
 
   // compleated today overview
-  let completedTasks = dailyTasks.filter(task => task.status == "completed").length + weeklyTasks.filter(task => task.status == "completed").length;
+  let completedTasks = dailyTasks.filter(task => task.status == "completed").length + weeklyTasks.filter(task => task.status == "completed").length + monthlyTasks.filter(task => task.status == "completed").length;
   const totalTasks = total_num_tasks;
 
   const progress = totalTasks > 0
@@ -366,13 +366,13 @@ export default function HomePage() {
           overviewCompleatedText = "Great start!";
           break;
       case 2:
-          overviewCompleatedText = "You're building momentum!";
+          overviewCompleatedText = "Gaining momentum!";
           break;
       case 3:
           overviewCompleatedText = "Keep it going!";
           break;
       case 4:
-          overviewCompleatedText = "You're making great progress!";
+          overviewCompleatedText = "Great progress!";
           break;
       case 5:
           overviewCompleatedText = "Halfway there!";
@@ -387,10 +387,10 @@ export default function HomePage() {
           overviewCompleatedText = "Look at you go!";
           break;
       case 9:
-          overviewCompleatedText = "Almost everything done!";
+          overviewCompleatedText = "Almost done!";
           break;
       case 10:
-          overviewCompleatedText = "All tasks completed!";
+          overviewCompleatedText = "All completed!";
           break;
   }
 
@@ -465,10 +465,24 @@ export default function HomePage() {
                 <div className="overview-info">
                   <p className="today-tasks-overview-num">{total_num_tasks}</p>
                   <div className="today-tasks-overview-box">
-                    <p className="today-daily-tasks-overview-num">{total_daily_tasks_num} Daily</p>
-                    <p><b>.</b></p>
-                    <p className="today-weekly-tasks-overview-num">{total_weekly_tasks_num} Weekly</p>
-                  </div>
+                    {total_daily_tasks_num >= 0 && (
+                        <p className="today-daily-tasks-overview-num">
+                            {total_daily_tasks_num} Daily
+                        </p>
+                    )}
+
+                    {total_weekly_tasks_num >= 0 && (
+                        <p className="today-daily-tasks-overview-num">
+                            {total_weekly_tasks_num} Weekly
+                        </p>
+                    )}
+
+                    {total_monthly_tasks_num >= 0 && (
+                        <p className="today-daily-tasks-overview-num">
+                            {total_monthly_tasks_num} Monthly
+                        </p>
+                    )}
+                </div>
                 </div>
               </div>
 
@@ -523,15 +537,15 @@ export default function HomePage() {
                     </div>
                     <div className="todays-tasks-options">
 
-                      <button className="tasks-option-box" onClick={() => setTaskFilter("all")}>
+                      <button className={`tasks-option-box ${taskFilter === "all" ? "active" : ""}`}  onClick={() => setTaskFilter("all")}>
                         All Tasks
                       </button>
 
-                      <button className="tasks-option-box" onClick={() => setTaskFilter("todo")}>
+                      <button className={`tasks-option-box ${taskFilter === "todo" ? "active" : ""}`} onClick={() => setTaskFilter("todo")}>
                         To Do
                       </button>
 
-                      <button className="tasks-option-box" onClick={() => setTaskFilter("compleated")}>
+                      <button className={`tasks-option-box ${taskFilter === "compleated" ? "active" : ""}`} onClick={() => setTaskFilter("compleated")}>
                         Compleated
                       </button>
 
@@ -715,8 +729,8 @@ export default function HomePage() {
 
               <div className="add-task-date-collection-slot">
                 <div className="add-task-input-box">
-                  <h5>Squedualed Date</h5>
-                  <input className="add-task-text-input" required id="taskDate" type="date" value={dueDate} onChange={e => setDueDate(e.target.value)}></input>
+                  <h5>Scheduled Date</h5>
+                  <input className="add-task-text-input" required id="taskDate" type="date"  min={new Date().toISOString().split("T")[0]} value={dueDate} onChange={e => setDueDate(e.target.value)}></input>
                 </div>
               
 
@@ -804,8 +818,16 @@ export default function HomePage() {
 
               <div className="add-task-date-collection-slot">
                 <div className="add-task-input-box">
-                  <h5>Squedualed Date</h5>
-                  <input className="add-task-text-input" required id="taskDate" type="date" value={dueDateEdit} onChange={e => setDueDateEdit(e.target.value)}></input>
+                  <h5>Scheduled Date</h5>
+                  <input
+                      className="add-task-text-input"
+                      required
+                      id="taskDate"
+                      type="date"
+                      min={new Date().toISOString().split("T")[0]}
+                      value={dueDateEdit}
+                      onChange={e => setDueDateEdit(e.target.value)}
+                  />
                 </div>
               
 

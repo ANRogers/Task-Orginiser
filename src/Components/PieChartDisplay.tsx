@@ -7,6 +7,8 @@ import {
     Legend
 } from 'recharts';
 
+import "../styles/Statistic.css"
+
 interface StatsPieChartProps {
     completed: number;
     late: number;
@@ -56,8 +58,9 @@ export default function StatsPieChart({
                     textAnchor="middle"
                     dominantBaseline="middle"
                     fill="#FFFFFF"
-                    fontSize="26"
+                    
                     fontWeight="bold"
+                    className='pie-chart-inner-text'
                 >
                     {Math.round(((completed + late) / (completed + late + todo + overdue)) * 100)}%
                 </text>
@@ -68,7 +71,8 @@ export default function StatsPieChart({
                     textAnchor="middle"
                     dominantBaseline="middle"
                     fill="#A0A5B0"
-                    fontSize="10"
+                    
+                    className='pie-chart-inner-text-complete'
                 >
                     Completed
                 </text>

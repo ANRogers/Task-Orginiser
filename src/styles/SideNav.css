@@ -4,11 +4,26 @@
   box-sizing: border-box;
   flex-shrink: 0;
   color: #AAB2C0;
-  padding: 28px 16px;
+  padding: 16px;
   min-height: 100vh;
   border-right: 1px solid #191f38;
   background-color: #090c1a;
   overflow: hidden;
+}
+
+.image-container {
+    display: flex;
+    justify-content: center; /* Horizontal */
+    align-items: center;     /* Vertical */
+  margin-bottom: 12px;
+}
+
+.side-nav-logo{
+  width: 120px;
+  height: 120px;
+  align-items: center;
+  align-content: center;
+  justify-content: center;
 }
 
 .nav-sidebar .workspace{

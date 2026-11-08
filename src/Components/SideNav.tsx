@@ -13,6 +13,8 @@ import {
   type Workspace
 } from '../services/WorkspaceService'
 
+import MouseLogo from "../assets/Mouse_Logo_Synthwave_Transparent.png"
+
 export default function SideNavBar() {
 
     const [workspaces, setWorkspaces] = useState<Workspace[]>([]);
@@ -86,6 +88,9 @@ export default function SideNavBar() {
 
     return (
      <div className="nav-sidebar">
+      <div className="image-container">
+        <img className="side-nav-logo" src={MouseLogo} alt="Logo" />
+      </div>
         <div className="workspace">
             <h5 className="workspace-title">WORKSPACE</h5>
             <Link to="/" className="workspace-nav-link">

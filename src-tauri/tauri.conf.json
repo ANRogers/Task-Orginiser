@@ -1,6 +1,6 @@
 {
   "$schema": "https://schema.tauri.app/config/2",
-  "productName": "task-orginiser",
+  "productName": "MousePad",
   "version": "0.1.0",
   "identifier": "com.alexn.task-orginiser",
   "build": {
@@ -12,9 +12,12 @@
   "app": {
     "windows": [
       {
-        "title": "Task Orginiser",
+        "title": "MousePad",
         "width": 1080,
-        "height": 960
+        "height": 960,
+        "minWidth": 1000,
+        "minHeight": 905,
+        "resizable": true
       }
     ],
     "security": {

@@ -377,24 +377,24 @@ export default function TaskPage() {
                     
                     <div className="todays-tasks-options">
 
-                      <button className="tasks-option-box" onClick={() => setTaskFilter("all")}>
+                      <button className={`tasks-option-box ${taskFilter === "all" ? "active" : ""}`} onClick={() => setTaskFilter("all")}>
                         All Tasks
                       </button>
 
-                      <button className="tasks-option-box" onClick={() => setTaskFilter("daily")}>
+                      <button className={`tasks-option-box ${taskFilter === "daily" ? "active" : ""}`} onClick={() => setTaskFilter("daily")}>
                         Daily
                       </button>
 
-                      <button className="tasks-option-box" onClick={() => setTaskFilter("weekly")}>
+                      <button className={`tasks-option-box ${taskFilter === "weekly" ? "active" : ""}`} onClick={() => setTaskFilter("weekly")}>
                         Weekly
                       </button>
 
-                      <button className="tasks-option-box" onClick={() => setTaskFilter("monthly")}>
+                      <button className={`tasks-option-box ${taskFilter === "monthly" ? "active" : ""}`} onClick={() => setTaskFilter("monthly")}>
                         Monthly
                       </button>
 
 
-                      <button className="tasks-option-box" onClick={() => setTaskFilter("archived")}>
+                      <button className={`tasks-option-box ${taskFilter === "archived" ? "active" : ""}`} onClick={() => setTaskFilter("archived")}>
                         Archived
                       </button>
                     </div>
@@ -569,8 +569,8 @@ export default function TaskPage() {
 
               <div className="add-task-date-collection-slot">
                 <div className="add-task-input-box">
-                  <h5>Squedualed Date</h5>
-                  <input className="add-task-text-input" required id="taskDate" type="date" value={dueDate} onChange={e => setDueDate(e.target.value)}></input>
+                  <h5>Scheduled Date</h5>
+                  <input className="add-task-text-input" required id="taskDate" type="date" min={new Date().toISOString().split("T")[0]} value={dueDate} onChange={e => setDueDate(e.target.value)}></input>
                 </div>
               
 

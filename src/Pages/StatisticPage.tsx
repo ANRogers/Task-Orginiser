@@ -10,7 +10,7 @@ import "../styles/Statistic.css"
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { 
-  faPlus, faTableList, faSun, faMoon, faCircleCheck,
+  faPlus, faTableList, faSun, faMoon, faCircleCheck, faAngleLeft, faAngleRight
  } from '@fortawesome/free-solid-svg-icons';
 
 import {
@@ -85,14 +85,36 @@ export default function StatisticPage() {
     const [selectedWorkspace, setSelectedWorkspace] = useState("all");
     const [allTasks, setAllTasks] = useState<Task[]>([]);
 
+    
+    
+
     async function LoadAllTasks() {
         try {
             const all_tasks = await getAllTasksStats(selectedWorkspace);
-            setAllTasks(all_tasks);
+            await setAllTasks(all_tasks);
         } catch (error) {
             console.error("Failed to load tasks:", error);
         }
     }
+
+    //filter all tasks baised on current page
+    //creat a page number count and page number total
+    const [pageNumCurrent, setPageNumCurrent] = useState(1);
+    const pageNumTotal = useMemo(() => {
+        const newpagenum = Math.ceil(allTasks.length / 10);
+        if (pageNumCurrent > newpagenum){
+            setPageNumCurrent(Math.max(newpagenum, 1));
+        }
+        return newpagenum;
+    }, [allTasks]);
+    
+    const startIndex = (pageNumCurrent - 1) * 10;
+    const endIndex = startIndex + 10;
+    
+    const filteredTasks = allTasks.slice(startIndex, endIndex);
+
+    //make a function that slices the tasks baised on the current page number
+    
 
     // Load workspaces and tasks when the page opens
     useEffect(() => {
@@ -128,6 +150,7 @@ export default function StatisticPage() {
 
     async function reloadTasks() {
         await LoadAllTasks();
+        
     }
 
     // Task statistics
@@ -413,6 +436,7 @@ export default function StatisticPage() {
 
     useEffect(() => {
         LoadAllTasks();
+        
     }, [selectedWorkspace]);
 
   
@@ -441,7 +465,7 @@ export default function StatisticPage() {
             </div>
         </div>
 
-        <div className="dashboard">
+        <div className="dashboard-stats">
             <div className="dash-title">
             <div className="dash-title-left">
                 <h2>A little focus goes a long way.</h2>
@@ -732,7 +756,30 @@ export default function StatisticPage() {
                     <p>Here is your task history</p>
                 </div>
 
-                <TaskHistory allTasks={allTasks} />
+                <TaskHistory allTasks={filteredTasks} />
+                <div className="task-history-bottom-bar">
+                <div className="task-histroy-total-showing">
+                    <p>Showing {startIndex + 1} to { endIndex <= allTasks.length ? (endIndex) : (allTasks.length)} of {allTasks.length}</p>
+                </div>
+
+
+                <div className="task-history-pages-control">
+                    <p>Page {pageNumCurrent} of {pageNumTotal}</p>
+                    <div className="task-history-pages-control-buttons-slot">
+
+                        <button className="task-history-pages-control-button" disabled={pageNumCurrent <= 1} 
+                        onClick={() => {setPageNumCurrent(pageNumCurrent-1)}}>
+                            <FontAwesomeIcon icon={faAngleLeft} /></button>
+
+                        <button className="task-history-pages-control-button" disabled={pageNumCurrent >= pageNumTotal} 
+                        onClick={() => {setPageNumCurrent(pageNumCurrent+1)}}>
+                            <FontAwesomeIcon icon={faAngleRight} /></button>
+                    </div>
+                    
+                </div>
+
+                </div>
+                
                 
             </div>
             
@@ -823,12 +870,13 @@ export default function StatisticPage() {
 
                 <div className="add-task-date-collection-slot">
                     <div className="add-task-input-box">
-                    <h5>Squedualed Date</h5>
+                    <h5>Scheduled Date</h5>
                     <input
                         className="add-task-text-input"
                         required
                         id="taskDate"
                         type="date"
+                        min={new Date().toISOString().split("T")[0]}
                         value={dueDate}
                         onChange={e => setDueDate(e.target.value)}
                     />

@@ -88,7 +88,7 @@ export async function getTodaysDailyTasks(): Promise<Task[]> {
 export async function getTodaysWeeklyTasks(): Promise<Task[]> {
   const db = await getDatabase();
   const today = getLocalDate();
-  const nextWeek = getLocalDateOffset(7);
+  const nextWeek = getLocalDateOffset(6);
 
   return db.select<Task[]>(`
     SELECT
@@ -118,7 +118,7 @@ export async function getTodaysWeeklyTasks(): Promise<Task[]> {
 export async function getTodaysMonthlyTasks(): Promise<Task[]> {
   const db = await getDatabase();
   const today = getLocalDate();
-  const nextMonth = getLocalDateOffset(31);
+  const nextMonth = getLocalDateOffset(30);
 
   return db.select<Task[]>(`
     SELECT

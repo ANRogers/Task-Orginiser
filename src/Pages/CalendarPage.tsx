@@ -530,6 +530,7 @@ function openEditTask(task: Task) {
                                 className="add-task-text-input"
                                 required
                                 type="date"
+                                min={new Date().toISOString().split("T")[0]}
                                 value={dueDateEdit}
                                 onChange={e => setDueDateEdit(e.target.value)}
                             />
